@@ -21,6 +21,7 @@ namespace Infrastructure.Persistence.Repository
         #region Methods
         public async Task<SensorReading?> GetByIdAsync(Guid sensorReadingId)
         {
+
             return await _collection
                 .Find(r => r.SensorReadingId == sensorReadingId)
                 .FirstOrDefaultAsync();
