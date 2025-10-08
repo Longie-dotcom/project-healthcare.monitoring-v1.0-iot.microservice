@@ -1,0 +1,54 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+bin/
+obj/
+Debug/
+Release/
+
+# Rider
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# .NET Core
+*.dll
+*.exe
+*.pdb
+*.log
+*.app
+*.vsix
+*.nupkg
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+*.nuspec
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Environment files
+.env
+
+# Grpc generated files
+**/obj/**/*.cs
+**/bin/**/*.cs
+
+# Misc
+_ReSharper*/
+*.DotSettings.user
+*.DotSettings
