@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./device-detail.css";
 
-
 function ControllerCard({ controller, onRelease, onReassign, onAssignSensor, onUnassignSensor, onReassignSensor }) {
   const [type, setType] = useState("");
   const [unit, setUnit] = useState("");
@@ -24,27 +23,16 @@ function ControllerCard({ controller, onRelease, onReassign, onAssignSensor, onU
     <div className={`record-card ${controller.isActive ? "active-card" : "inactive-card"}`}>
       <div className="controller-info">
         <div className="controller-key">
-          <strong>Controller Key:</strong>&nbsp;{controller.controllerKey}
+          <strong>Controller Key:</strong> {controller.controllerKey}
         </div>
         <div className="details">
-          <div>
-            <strong>Bed Number:</strong>&nbsp;{controller.bedNumber}
-          </div>
-          <div>
-            <strong>Firmware Version:</strong>&nbsp;{controller.firmwareVersion}
-          </div>
-          <div>
-            <strong>Status:</strong>&nbsp;{controller.isActive ? "Active" : "Inactive"}
-          </div>
-          {controller.isActive && (
-            <button onClick={() => onRelease(controller.controllerKey)}>Release</button>
-          )}
-          {!controller.isActive && (
-            <button className="re-assign" onClick={() => onReassign(controller.controllerKey)}>Re-assign</button>
-          )}
+          <div><strong>Bed Number:</strong> {controller.bedNumber}</div>
+          <div><strong>Firmware Version:</strong> {controller.firmwareVersion}</div>
+          <div><strong>Status:</strong> {controller.isActive ? "Active" : "Inactive"}</div>
+          {controller.isActive && <button onClick={() => onRelease({ controllerKey: controller.controllerKey })}>Release</button>}
+          {!controller.isActive && <button onClick={() => onReassign({ controllerKey: controller.controllerKey })}>Re-assign</button>}
         </div>
       </div>
-
 
       {/* Sensor Assignment */}
       <div className="assign-controls">
@@ -60,16 +48,8 @@ function ControllerCard({ controller, onRelease, onReassign, onAssignSensor, onU
           <div key={i} className="record-card sensor-card">
             <div><strong>Sensor Key:</strong> {s.sensorKey}</div>
             <div><strong>Status:</strong> {s.isActive ? "Active" : "Inactive"}</div>
-            {s.isActive && (
-              <button className="btn unassign" onClick={() => onUnassignSensor(s.sensorKey)}>
-                Unassign
-              </button>
-            )}
-            {!s.isActive && (
-              <button className="btn re-assign" onClick={() => onReassignSensor(s.sensorKey)}>
-                Reassign
-              </button>
-            )}
+            {s.isActive && <button onClick={() => onUnassignSensor({ controllerKey: controller.controllerKey, sensorKey: s.sensorKey })}>Unassign</button>}
+            {!s.isActive && <button onClick={() => onReassignSensor({ controllerKey: controller.controllerKey, sensorKey: s.sensorKey })}>Reassign</button>}
           </div>
         ))}
       </div>
@@ -77,67 +57,55 @@ function ControllerCard({ controller, onRelease, onReassign, onAssignSensor, onU
   );
 }
 
-function DeviceDetail({
-  device,
-  assignController,
-  unassignController,
-  assignSensor,
-  unassignSensor,
-  setReloadDetail,
-  onClose,
-  reactivateController,
-  reactivateSensor
-}) {
+function DeviceDetail({ device, assignController, unassignController, assignSensor, unassignSensor, updateController, updateSensor, setReloadDetail, onClose }) {
   if (!device) return null;
+
   const [bedNumber, setBedNumber] = useState("");
   const [ipAddress, setIpAddress] = useState("");
   const [firmwareVersion, setFirmwareVersion] = useState("");
-
   const [showReleasedControllers, setShowReleasedControllers] = useState("active");
-  const formatDate = (date) => (date ? date.split("T")[0] : "");
 
-  const handleReassignController = async ({ controllerKey }) => {
-    await reactivateController({
-      controllerKey
-    });
-    setReloadDetail((prev) => prev + 1);
+  // -------------------------
+  // Handlers
+  // -------------------------
+  const handleUpdateController = async ({ controllerKey, bedNumber, ipAddress, firmwareVersion, isActive }) => {
+    await updateController({ edgeKey: device.edgeKey, controllerKey, bedNumber, ipAddress, firmwareVersion, isActive });
+    setReloadDetail(prev => prev + 1);
   };
 
   const handleAssignController = async () => {
     if (!device) return;
-    await assignController({
-      edgeKey: device.edgeKey, bedNumber, ipAddress, firmwareVersion
-    });
-    setReloadDetail((prev) => prev + 1);
+    await assignController({ edgeKey: device.edgeKey, bedNumber, ipAddress, firmwareVersion });
+    setReloadDetail(prev => prev + 1);
   };
 
   const handleReleaseController = async ({ controllerKey }) => {
-    await unassignController({
-      controllerKey
-    });
-    setReloadDetail((prev) => prev + 1);
+    await unassignController({ edgeKey: device.edgeKey, controllerKey });
+    setReloadDetail(prev => prev + 1);
   };
 
-  const handleReassignSensor = async ({ sensorKey }) => {
-    await reactivateSensor({
-      sensorKey
-    });
-    setReloadDetail((prev) => prev + 1);
+  const handleUpdateSensor = async ({ controllerKey, sensorKey, type, unit, description, isActive }) => {
+    await updateSensor({ edgeKey: device.edgeKey, controllerKey, sensorKey, type, unit, description, isActive });
+    setReloadDetail(prev => prev + 1);
   };
 
   const handleAssignSensor = async ({ controllerKey, type = "", unit = "", description = "" }) => {
     if (!controllerKey) return;
-    await assignSensor({
-      controllerKey, type, unit, description,
-    });
-    setReloadDetail((prev) => prev + 1);
+    await assignSensor({ edgeKey: device.edgeKey, controllerKey, type, unit, description });
+    setReloadDetail(prev => prev + 1);
   };
 
-  const handleUnassignSensor = async ({ sensorKey }) => {
-    await unassignSensor({
-      sensorKey
-    });
-    setReloadDetail((prev) => prev + 1);
+  const handleUnassignSensor = async ({ controllerKey, sensorKey }) => {
+    await unassignSensor({ edgeKey: device.edgeKey, controllerKey, sensorKey });
+    setReloadDetail(prev => prev + 1);
+  };
+
+  const handleReassignController = async ({ controllerKey }) => {
+    await handleAssignController({ controllerKey });
+  };
+
+  const handleReassignSensor = async ({ controllerKey, sensorKey }) => {
+    await handleAssignSensor({ controllerKey, sensorKey });
   };
 
   return (
@@ -150,26 +118,11 @@ function DeviceDetail({
       {/* Basic info */}
       <div className="info-grid">
         <div>
-          <div>
-            <strong>Edge Key:</strong>
-            <div>{device.edgeKey}</div>
-          </div>
-          <div>
-            <strong>Room Name</strong>
-            <div>{device.roomName}</div>
-          </div>
-          <div>
-            <strong>IP Address</strong>
-            <div>{device.ipAddress}</div>
-          </div>
-          <div>
-            <strong>Description</strong>
-            <div>{device.description}</div>
-          </div>
-          <div>
-            <strong>Activation</strong>
-            <div>{device.isActive ? "Active" : "Inactive"}</div>
-          </div>
+          <div><strong>Edge Key:</strong> {device.edgeKey}</div>
+          <div><strong>Room Name:</strong> {device.roomName}</div>
+          <div><strong>IP Address:</strong> {device.ipAddress}</div>
+          <div><strong>Description:</strong> {device.description}</div>
+          <div><strong>Activation:</strong> {device.isActive ? "Active" : "Inactive"}</div>
         </div>
       </div>
 
@@ -177,40 +130,20 @@ function DeviceDetail({
       <section className="section">
         <h4>🖥️ Controller Assignment</h4>
         <div className="assign-controls">
-          <input
-            type="text"
-            placeholder="Bed Number"
-            value={bedNumber}
-            onChange={(e) => setBedNumber(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Firmware Version"
-            value={firmwareVersion}
-            onChange={(e) => setFirmwareVersion(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="IP Address"
-            value={ipAddress}
-            onChange={(e) => setIpAddress(e.target.value)}
-          />
-          <button onClick={handleAssignController}>
-            Assign Controller
-          </button>
+          <input type="text" placeholder="Bed Number" value={bedNumber} onChange={(e) => setBedNumber(e.target.value)} />
+          <input type="text" placeholder="Firmware Version" value={firmwareVersion} onChange={(e) => setFirmwareVersion(e.target.value)} />
+          <input type="text" placeholder="IP Address" value={ipAddress} onChange={(e) => setIpAddress(e.target.value)} />
+          <button onClick={handleAssignController}>Assign Controller</button>
         </div>
 
         {/* Toggle released controllers */}
-        <button
-          className="toggle-btn"
-          onClick={() => {
-            setShowReleasedControllers((prev) => {
-              if (prev === "active") return "inactive";
-              if (prev === "inactive") return "all";
-              return "active"; // cycle back to active
-            });
-          }}
-        >
+        <button className="toggle-btn" onClick={() => {
+          setShowReleasedControllers(prev => {
+            if (prev === "active") return "inactive";
+            if (prev === "inactive") return "all";
+            return "active";
+          });
+        }}>
           {showReleasedControllers === "active" && "Show Active Controllers"}
           {showReleasedControllers === "inactive" && "Show Inactive Controllers"}
           {showReleasedControllers === "all" && "Show All Controllers"}
@@ -219,23 +152,19 @@ function DeviceDetail({
         {/* Controllers */}
         <div>
           {(device.controllers || [])
-            .filter((c) => {
-              if (showReleasedControllers === "active") return c.isActive;
-              if (showReleasedControllers === "inactive") return !c.isActive;
-              if (showReleasedControllers === "all") return true; // show all controllers
-              return true;
-            })
-            .map((c) => (
+            .filter(c => showReleasedControllers === "all" ? true : (showReleasedControllers === "active" ? c.isActive : !c.isActive))
+            .map(c => (
               <ControllerCard
-                key={c.controllerKey} // stable key
+                key={c.controllerKey}
                 controller={c}
-                onReassign={(controllerKey) => handleReassignController({ controllerKey })}
-                onRelease={(controllerKey) => handleReleaseController({ controllerKey })}
-                onAssignSensor={(data) => handleAssignSensor(data)} // just pass the object
-                onUnassignSensor={(sensorKey) => handleUnassignSensor({ sensorKey })}
-                onReassignSensor={(sensorKey) => handleReassignSensor({ sensorKey })}
+                onReassign={handleReassignController}
+                onRelease={handleReleaseController}
+                onAssignSensor={handleAssignSensor}
+                onUnassignSensor={handleUnassignSensor}
+                onReassignSensor={handleReassignSensor}
               />
-            ))}
+            ))
+          }
         </div>
       </section>
     </div>

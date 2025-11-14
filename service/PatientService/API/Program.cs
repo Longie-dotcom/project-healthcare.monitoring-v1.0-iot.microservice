@@ -111,7 +111,7 @@ app.UseSwaggerUI(c =>
 // -----------------------------
 // Map Grpc
 // -----------------------------
-app.MapGrpcService<IAMGrpcService>();
+app.MapGrpcService<PatientGrpcService>();
 
 // -----------------------------
 // Middlewares

@@ -25,8 +25,7 @@ namespace Domain.Entity
             Guid patientStaffAssignmentId,
             Guid patientId,
             string staffIdentityNumber,
-            DateTime assignedAt,
-            bool isActive)
+            DateTime assignedAt)
         {
             ValidatePatientStaffAssignmentID(patientStaffAssignmentId);
             ValidatePatientID(patientId);
@@ -37,21 +36,13 @@ namespace Domain.Entity
             PatientID = patientId;
             StaffIdentityNumber = staffIdentityNumber;
             AssignedAt = assignedAt;
-            IsActive = isActive;
+            IsActive = true;
         }
 
         #region Methods
-        public void Unassign(DateTime unassignedAt)
+        public void Unassign()
         {
-            if (!IsActive)
-                throw new InvalidPatientAggregateException(
-                    "Staff assignment is already inactive.");
-
-            if (unassignedAt < AssignedAt)
-                throw new InvalidPatientAggregateException(
-                    "UnassignedAt cannot be before AssignedAt.");
-
-            UnassignedAt = unassignedAt;
+            UnassignedAt = DateTime.UtcNow;
             IsActive = false;
         }
         #endregion

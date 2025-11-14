@@ -80,25 +80,15 @@ namespace Domain.Entity
         {
             if (!IsActive) return;
             IsActive = false;
-
-            foreach (var sensor in sensors)
-            {
-                sensor.UpdateActive(false);
-            }
         }
 
         public void Activate()
         {
             if (IsActive) return;
             IsActive = true;
-
-            foreach (var sensor in sensors)
-            {
-                sensor.UpdateActive(true);
-            }
         }
 
-
+        // For assignment
         public void AddSensor(Sensor sensor)
         {
             if (sensor == null)
@@ -119,6 +109,16 @@ namespace Domain.Entity
             }
 
             sensors.Add(sensor);
+        }
+
+        // For unassignment
+        public void RemoveSensor(string sensorKey)
+        {
+            var sensor = sensors.FirstOrDefault(s => s.SensorKey == sensorKey);
+            if (sensor != null)
+            {
+                sensors.Remove(sensor);
+            }
         }
         #endregion
 

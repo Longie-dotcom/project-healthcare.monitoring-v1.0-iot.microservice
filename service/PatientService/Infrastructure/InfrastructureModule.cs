@@ -142,7 +142,7 @@ namespace Infrastructure
                     });
 
                     services.AddScoped<IUpdateUserPublisher, UpdateUserPublisher>();
-                    services.AddScoped<ICreateDeviceProfilePublisher, CreateDeviceProfilePublisher>();
+                    services.AddScoped<IDeviceProfileAssignmentPublisher, DeviceProfileAssignmentPublisher>();
                 });
 
                 InfrastructureLoggerBase(

@@ -133,6 +133,7 @@ namespace Infrastructure
                     });
 
                     services.AddScoped<IUpdateDevicePublisher, UpdateDevicePublisher>();
+                    services.AddScoped<ISensorAssignmentPublisher, SensorAssignmentPublisher>();
                 });
 
                 InfrastructureLoggerBase(
@@ -154,7 +155,7 @@ namespace Infrastructure
                 InfrastructureLoggerBase(
                     logger, "Configuring gRPC connection.");
 
-                services.AddScoped<IGrpcClient, GrpcClient>();
+                services.AddScoped<IPatientGrpcClient, PatientGrpcClient>();
 
                 InfrastructureLoggerBase(
                 logger, "gRPC configured successfully.");

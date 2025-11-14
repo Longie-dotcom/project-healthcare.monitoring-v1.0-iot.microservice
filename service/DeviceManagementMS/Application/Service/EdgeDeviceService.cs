@@ -1,12 +1,14 @@
 ﻿using Application.ApplicationException;
 using Application.DTO;
+using Application.Helper;
+using Application.Interface.IGrpc;
 using Application.Interface.IMessagePublisher;
 using Application.Interface.IService;
 using AutoMapper;
 using Domain.Aggregate;
 using Domain.Entity;
 using Domain.IRepository;
-using HCM.CodeFormatter;
+using HCM.MessageBrokerDTOs;
 
 namespace Application.Service
 {
@@ -15,36 +17,38 @@ namespace Application.Service
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
         private readonly IUpdateDevicePublisher updateDevicePublisher;
+        private readonly IPatientGrpcClient patientGrpcClient;
+        private readonly ISensorAssignmentPublisher sensorAssignmentPublisher;
 
         public EdgeDeviceService(
-            IUnitOfWork unitOfWork, 
-            IMapper mapper, 
-            IUpdateDevicePublisher updateDevicePublisher)
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IUpdateDevicePublisher updateDevicePublisher,
+            IPatientGrpcClient patientGrpcClient,
+            ISensorAssignmentPublisher sensorAssignmentPublisher)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.updateDevicePublisher = updateDevicePublisher;
+            this.patientGrpcClient = patientGrpcClient;
+            this.sensorAssignmentPublisher = sensorAssignmentPublisher;
         }
 
         #region Methods
-        public async Task<EdgeDeviceDTO> GetByIdAsync(
-            Guid edgeDeviceId)
+        public async Task<EdgeDeviceDTO> GetByIdAsync(Guid edgeDeviceId)
         {
             var repo = unitOfWork.GetRepository<IEdgeDeviceRepository>();
             var device = await repo.GetDetailedByIdAsync(edgeDeviceId);
-            if (device == null) 
+            if (device == null)
                 throw new DeviceNotFound($"EdgeDevice {edgeDeviceId} not found");
+
             return mapper.Map<EdgeDeviceDTO>(device);
         }
 
-        public async Task<IEnumerable<EdgeDeviceDTO>> GetAllAsync(
-            QueryEdgeDeviceDTO dto, string sort)
+        public async Task<IEnumerable<EdgeDeviceDTO>> GetAllAsync(QueryEdgeDeviceDTO dto, string sort)
         {
             var repo = unitOfWork.GetRepository<IEdgeDeviceRepository>();
-            var devices = await repo.GetAllWithFilter(
-                dto.Search ?? "", 
-                dto.PageIndex, 
-                dto.PageLength);
+            var devices = await repo.GetAllWithFilter(dto.Search ?? string.Empty, dto.PageIndex, dto.PageLength);
 
             if (devices == null || !devices.Any())
                 throw new DeviceNotFound("The device list is empty");
@@ -56,24 +60,15 @@ namespace Application.Service
         {
             var repo = unitOfWork.GetRepository<IEdgeDeviceRepository>();
 
-            // Validate room occupied
-            var existed = await repo.IsRoomAssignedAsync(dto.RoomName);
-            if (existed)
+            // check room occupied
+            var roomAssigned = await repo.IsRoomAssignedAsync(dto.RoomName);
+            if (roomAssigned)
                 throw new RoomOccupied($"The room: {dto.RoomName} has been occupied");
 
-            // Fetch all existing devices (you could optimize this to just count)
-            var existingDevices = (await repo.GetAllAsync()).ToList();
-            var nextIndex = existingDevices.Count + 1;
-
-            // Generate random 8-character alphanumeric anchor
-            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            var random = new Random();
-            var anchor = new string(Enumerable.Range(0, 8)
-                .Select(_ => chars[random.Next(chars.Length)])
-                .ToArray());
-
-            // Generate EdgeKey using the random anchor
-            var edgeKey = CodeFormatter.Format("EDGE", anchor, DateTime.UtcNow, nextIndex);
+            // compute next index for key generation (count existing devices)
+            var existing = (await repo.GetAllWithFilter(string.Empty, 1, int.MaxValue)).ToList();
+            var nextIndex = existing.Count + 1;
+            var edgeKey = KeyGenerator.GenerateKey("EDGE", nextIndex);
 
             var device = new EdgeDevice(
                 Guid.NewGuid(),
@@ -86,23 +81,24 @@ namespace Application.Service
             repo.Add(device);
             await unitOfWork.CommitAsync(dto.PerformedBy);
 
+            // publish
+            await PublishEdgeDeviceUpdateAsync(device, dto.PerformedBy ?? string.Empty);
+
             return mapper.Map<EdgeDeviceDTO>(device);
         }
 
-        public async Task<EdgeDeviceDTO> UpdateAsync(
-            Guid edgeDeviceId, EdgeDeviceUpdateDTO dto)
+        public async Task<EdgeDeviceDTO> UpdateAsync(Guid edgeDeviceId, EdgeDeviceUpdateDTO dto)
         {
             var repo = unitOfWork.GetRepository<IEdgeDeviceRepository>();
             var device = await repo.GetDetailedByIdAsync(edgeDeviceId);
             if (device == null)
                 throw new DeviceNotFound($"EdgeDevice {edgeDeviceId} not found");
 
-            // Update main EdgeDevice fields
+            // Update fields with validations done in aggregate
             if (!string.IsNullOrWhiteSpace(dto.RoomName) && dto.RoomName != device.RoomName)
             {
-                // Validate room occupied
-                var existed = await repo.IsRoomAssignedAsync(dto.RoomName);
-                if (existed)
+                var roomAssigned = await repo.IsRoomAssignedAsync(dto.RoomName);
+                if (roomAssigned)
                     throw new RoomOccupied($"The room: {dto.RoomName} has been occupied");
 
                 device.UpdateRoomName(dto.RoomName);
@@ -116,84 +112,151 @@ namespace Application.Service
 
             await unitOfWork.CommitAsync(dto.PerformedBy);
 
-            // Publish update event
-            await PublishEdgeDeviceAsync(device, dto.PerformedBy);
+            // publish
+            await PublishEdgeDeviceUpdateAsync(device, dto.PerformedBy ?? string.Empty);
 
-            // Return mapped DTO for API response
             return mapper.Map<EdgeDeviceDTO>(device);
         }
 
-        public async Task DeleteAsync(
-            Guid edgeDeviceId, EdgeDeviceDeleteDTO dto)
+        public async Task DeactiveAsync(Guid edgeDeviceId, EdgeDeviceDeactiveDTO dto)
         {
             var repo = unitOfWork.GetRepository<IEdgeDeviceRepository>();
-
-            // Apply domain
             var device = await repo.GetDetailedByIdAsync(edgeDeviceId);
             if (device == null)
                 throw new DeviceNotFound($"EdgeDevice: {edgeDeviceId} not found");
+
             device.Deactivate();
             await unitOfWork.CommitAsync(dto.PerformedBy);
 
-            // Publish deletion event
-            await PublishEdgeDeviceAsync(device, dto.PerformedBy);
+            // publish to update
+            await PublishEdgeDeviceUpdateAsync(device, dto.PerformedBy ?? string.Empty);
         }
 
         public async Task AssignControllerAsync(ControllerCreateDTO dto)
         {
             var repo = unitOfWork.GetRepository<IEdgeDeviceRepository>();
 
-            // Fetch the EdgeDevice owner
+            // fetch owner with children
             var edgeOwner = await repo.GetEdgeDeviceByEdgeKeyAsTracking(dto.EdgeKey);
             if (edgeOwner == null)
-                throw new DeviceNotFound(
-                    $"Edge device with key:{dto.EdgeKey} is not found");
+                throw new DeviceNotFound($"Edge device with key:{dto.EdgeKey} is not found");
 
-            // Validate bed occupied
-            if (string.IsNullOrEmpty(dto.BedNumber))
+            // validate bed conflict inside the same edge
+            var bedNumber = dto.BedNumber ?? string.Empty;
+            if (!string.IsNullOrWhiteSpace(bedNumber))
             {
-                var existed = await repo.IsBedAssignedAsync(dto.EdgeKey, dto.BedNumber ?? "");
-                if (existed)
-                    throw new RoomOccupied(
-                        $"The bed: {dto.BedNumber} has been occupied in the room own by edge: {dto.EdgeKey}");
+                var bedConflict = edgeOwner.Controllers.Any(c => c.BedNumber == bedNumber && c.IsActive);
+                if (bedConflict)
+                    throw new BedOccupied($"The bed: {bedNumber} has been occupied in edge {dto.EdgeKey}");
             }
 
-            // Generate ControllerKey using parent EdgeKey as the second parameter
-            var existingControllers = edgeOwner.Controllers.ToList();
-            var nextIndex = existingControllers.Count + 1;
-            var controllerKey = CodeFormatter.Format("CTRL", edgeOwner.EdgeKey, DateTime.UtcNow, nextIndex);
+            // validate ip conflict inside the same edge
+            var ipConflict = edgeOwner.Controllers.Any(c => c.IpAddress == dto.IpAddress);
+            if (ipConflict)
+                throw new IPAddressConflicting($"The IP: {dto.IpAddress} has been occupied in edge {dto.EdgeKey}");
+
+            var nextIndex = edgeOwner.Controllers.Count + 1;
+            var controllerKey = KeyGenerator.GenerateKey("CTRL", nextIndex);
 
             var controller = new Controller(
                 Guid.NewGuid(),
                 controllerKey,
                 dto.EdgeKey,
-                dto.BedNumber ?? "",
+                dto.BedNumber ?? string.Empty,
                 dto.IpAddress,
-                dto.FirmwareVersion ?? ""
+                dto.FirmwareVersion ?? string.Empty
             );
 
-            // Apply domain
+            // domain
             edgeOwner.AddController(controller);
 
-            // Apply persistence
+            // persistence helper
             repo.AssignController(controller);
             await unitOfWork.CommitAsync(dto.PerformedBy);
+
+            // publish controller: patient ms will publish the using controller only
+        }
+
+        public async Task<ControllerDTO> UpdateControllerAsync(ControllerUpdateDTO dto)
+        {
+            var repo = unitOfWork.GetRepository<IEdgeDeviceRepository>();
+
+            // fetch parent edge (we require edgeKey in DTO)
+            var edge = await repo.GetEdgeDeviceByEdgeKeyAsTracking(dto.EdgeKey);
+            if (edge == null)
+                throw new DeviceNotFound($"Edge device with key:{dto.EdgeKey} not found");
+
+            var controller = edge.Controllers.FirstOrDefault(c => c.ControllerKey == dto.ControllerKey);
+            if (controller == null)
+                throw new DeviceNotFound($"Controller with key:{dto.ControllerKey} not found");
+
+            if (!string.IsNullOrWhiteSpace(dto.BedNumber))
+                controller.UpdateBedNumber(dto.BedNumber);
+
+            if (!string.IsNullOrWhiteSpace(dto.IpAddress))
+                controller.UpdateIpAddress(dto.IpAddress);
+
+            if (!string.IsNullOrWhiteSpace(dto.FirmwareVersion))
+                controller.UpdateFirmwareVersion(dto.FirmwareVersion);
+
+            if (dto.IsActive.HasValue)
+            {
+                if (dto.IsActive.Value == true)
+                {
+                    controller.Activate();
+                }
+                else
+                {
+                    controller.Deactivate();
+                }
+            }
+
+            await unitOfWork.CommitAsync(dto.PerformedBy);
+
+            // publish controller (and its sensors)
+            await PublishControllerUpdateAsync(controller, dto.PerformedBy ?? string.Empty);
+
+            return mapper.Map<ControllerDTO>(controller);
+        }
+
+        public async Task UnassignControllerAsync(ControllerUnassignDTO dto)
+        {
+            var repo = unitOfWork.GetRepository<IEdgeDeviceRepository>();
+
+            // check with Patient MS if controller is in use
+            var inUse = await patientGrpcClient.IsControllerInUseAsync(dto.ControllerKey);
+            if (inUse)
+                throw new BedInUse($"Controller/beds '{dto.ControllerKey}' is currently in use by patient.");
+
+            // fetch parent edge as tracking
+            var edge = await repo.GetEdgeDeviceByEdgeKeyAsTracking(dto.EdgeKey);
+            if (edge == null)
+                throw new DeviceNotFound($"Edge device with key:{dto.EdgeKey} not found");
+
+            // remove controller, patient will never can call this controller to assign
+            edge.RemoveController(dto.ControllerKey);
+
+            await unitOfWork.CommitAsync(dto.PerformedBy);
+
+            // publish controller: patient ms will publish the using controller only
         }
 
         public async Task AssignSensorAsync(SensorCreateDTO dto)
         {
             var repo = unitOfWork.GetRepository<IEdgeDeviceRepository>();
 
-            // Fetch Controller owner
-            var controllerOwner = await repo.GetControllerByControllerKeyAsTracking(dto.ControllerKey);
-            if (controllerOwner == null)
-                throw new DeviceNotFound(
-                    $"Controller device with key:{dto.ControllerKey} is not found");
+            // fetch edge + controllers as tracking
+            var edgeOwner = await repo.GetEdgeDeviceByEdgeKeyAsTracking(dto.EdgeKey);
+            if (edgeOwner == null)
+                throw new DeviceNotFound($"Edge device with key:{dto.EdgeKey} is not found");
 
-            // Generate SensorKey using parent ControllerKey as the second parameter
-            var existingSensors = controllerOwner.Sensors.ToList();
-            var nextIndex = existingSensors.Count + 1;
-            var sensorKey = CodeFormatter.Format("SENS", controllerOwner.ControllerKey, DateTime.UtcNow, nextIndex);
+            var controller = edgeOwner.Controllers.FirstOrDefault(c => c.ControllerKey == dto.ControllerKey);
+            if (controller == null)
+                throw new DeviceNotFound($"Controller device with key:{dto.ControllerKey} is not found");
+
+            // bed/sensor collision is validated in aggregate AddSensor (controller-level)
+            var nextIndex = controller.Sensors.Count + 1;
+            var sensorKey = KeyGenerator.GenerateKey("SENS", nextIndex);
 
             var sensor = new Sensor(
                 Guid.NewGuid(),
@@ -201,268 +264,159 @@ namespace Application.Service
                 dto.ControllerKey,
                 dto.Type,
                 dto.Unit,
-                dto.Description ?? ""
+                dto.Description ?? string.Empty
             );
 
-            // Apply domain
-            controllerOwner.AddSensor(sensor);
+            controller.AddSensor(sensor);
 
-            // Apply persistence
+            // persistence
             repo.AssignSensor(sensor);
             await unitOfWork.CommitAsync(dto.PerformedBy);
 
-            // Publish sensor sync
-            var syncDto = new SensorSyncDTO
-            {
-                SensorKey = sensor.SensorKey,
-                ControllerKey = sensor.ControllerKey,
-                Type = sensor.Type,
-                Unit = sensor.Unit,
-                Description = sensor.Description,
-                IsActive = sensor.IsActive,
-                PerformedBy = dto.PerformedBy
-            };
-
-            await updateDevicePublisher.PublishUpdateSensorAsync(syncDto);
+            // publish
+            await PublishSensorAssign(sensor, edgeOwner.EdgeKey, dto.PerformedBy ?? string.Empty);
         }
 
-        public async Task UnassignControllerAsync(ControllerDeleteDTO dto)
+        public async Task<SensorDTO> UpdateSensorAsync(SensorUpdateDTO dto)
         {
             var repo = unitOfWork.GetRepository<IEdgeDeviceRepository>();
 
-            // Apply domain
-            var controller = await repo.GetControllerByControllerKeyAsTracking(dto.ControllerKey);
+            // fetch parent edge which includes controllers + sensors
+            var edge = await repo.GetEdgeDeviceByEdgeKeyAsTracking(dto.EdgeKey);
+            if (edge == null)
+                throw new DeviceNotFound($"Edge device with key:{dto.EdgeKey} not found");
+
+            var controller = edge.Controllers.FirstOrDefault(c => c.ControllerKey == dto.ControllerKey);
             if (controller == null)
-                throw new DeviceNotFound(
-                    $"Controller device with key:{dto.ControllerKey} is not found");
-            controller.Deactivate();
-            await unitOfWork.CommitAsync(dto.PerformedBy);
+                throw new DeviceNotFound($"Controller with key:{dto.ControllerKey} not found");
 
-            // Publish sensor sync
-            foreach (var sensor in controller.Sensors)
-            {
-                var sensorSyncDto = new SensorSyncDTO
-                {
-                    SensorKey = sensor.SensorKey,
-                    IsActive = false,
-                    PerformedBy = dto.PerformedBy
-                };
-
-                await updateDevicePublisher.PublishUpdateSensorAsync(sensorSyncDto);
-            }
-
-            // Publish controller sync
-            var syncDto = new ControllerSyncDTO
-            {
-                ControllerKey = controller.ControllerKey,
-                IsActive = false,
-                PerformedBy = dto.PerformedBy
-            };
-            await updateDevicePublisher.PublishUpdateControllerAsync(syncDto);
-        }
-
-        public async Task UnassignSensorAsync(SensorDeleteDTO dto)
-        {
-            var repo = unitOfWork.GetRepository<IEdgeDeviceRepository>();
-
-            // Apply domain
-            var sensor = await repo.GetSensorBySensorKeyAsTracking(dto.SensorKey);
+            var sensor = controller.Sensors.FirstOrDefault(s => s.SensorKey == dto.SensorKey);
             if (sensor == null)
-                throw new DeviceNotFound(
-                    $"Sensor device with key:{dto.SensorKey} is not found");
-            sensor.UpdateActive(false);
-            await unitOfWork.CommitAsync(dto.PerformedBy);
+                throw new DeviceNotFound($"Sensor with key:{dto.SensorKey} not found");
 
-            // Publish sensor sync
-            var syncDto = new SensorSyncDTO
+            // update fields
+            if (!string.IsNullOrWhiteSpace(dto.Type))
+                sensor.UpdateType(dto.Type);
+
+            if (!string.IsNullOrWhiteSpace(dto.Unit))
+                sensor.UpdateUnit(dto.Unit);
+
+            if (!string.IsNullOrWhiteSpace(dto.Description))
+                sensor.UpdateDescription(dto.Description);
+
+            if (dto.IsActive.HasValue)
             {
-                ControllerKey = sensor.ControllerKey,
-                SensorKey = dto.SensorKey,
-                IsActive = false,
-                PerformedBy = dto.PerformedBy
-            };
-
-            await updateDevicePublisher.PublishUpdateSensorAsync(syncDto);
-        }
-
-        public async Task ReactivateEdgeDeviceAsync(string edgeKey, string performedBy)
-        {
-            var repo = unitOfWork.GetRepository<IEdgeDeviceRepository>();
-
-            var device = await repo.GetEdgeDeviceByEdgeKeyAsTrackingInactive(edgeKey);
-            if (device == null)
-                throw new DeviceNotFound(
-                    $"EdgeDevice with key '{edgeKey}' not found or already active.");
-
-            // Force activation
-            device.Activate();
-            await unitOfWork.CommitAsync(performedBy);
-
-            // Publish all controllers and sensors
-            foreach (var controller in device.Controllers)
-            {
-                var controllerSync = new ControllerSyncDTO
+                if (dto.IsActive.Value == true)
                 {
-                    ControllerKey = controller.ControllerKey,
-                    BedNumber = controller.BedNumber,
-                    IpAddress = controller.IpAddress,
-                    FirmwareVersion = controller.FirmwareVersion,
-                    IsActive = controller.IsActive,
-                    PerformedBy = performedBy
-                };
-                await updateDevicePublisher.PublishUpdateControllerAsync(controllerSync);
-
-                foreach (var sensor in controller.Sensors)
+                    controller.Activate();
+                }
+                else
                 {
-                    var sensorSync = new SensorSyncDTO
-                    {
-                        SensorKey = sensor.SensorKey,
-                        ControllerKey = controller.ControllerKey,
-                        Type = sensor.Type,
-                        Unit = sensor.Unit,
-                        Description = sensor.Description,
-                        IsActive = sensor.IsActive,
-                        PerformedBy = performedBy
-                    };
-                    await updateDevicePublisher.PublishUpdateSensorAsync(sensorSync);
+                    controller.Deactivate();
                 }
             }
+
+            await unitOfWork.CommitAsync(dto.PerformedBy);
+
+            // publish change
+            await PublishSensorUpdateAsync(sensor, edge.EdgeKey, dto.PerformedBy ?? string.Empty);
+
+            return mapper.Map<SensorDTO>(sensor);
         }
 
-        public async Task ReactivateControllerAsync(string controllerKey, string performedBy)
+        public async Task UnassignSensorAsync(SensorUnassignDTO dto)
         {
             var repo = unitOfWork.GetRepository<IEdgeDeviceRepository>();
-            var controller = await repo.GetControllerByControllerKeyAsTrackingInactive(controllerKey);
+
+            // fetch controller by searching edge first
+            var edge = await repo.GetEdgeDeviceByEdgeKeyAsTracking(dto.EdgeKey);
+            if (edge == null)
+                throw new DeviceNotFound($"Edge device with key:{dto.EdgeKey} not found");
+
+            var controller = edge.Controllers.FirstOrDefault(c => c.ControllerKey == dto.ControllerKey);
             if (controller == null)
-                throw new DeviceNotFound(
-                    $"Controller with key '{controllerKey}' not found or already active.");
+                throw new DeviceNotFound($"Controller with key:{dto.ControllerKey} not found");
 
-            // Force activation
-            controller.Activate();
-            await unitOfWork.CommitAsync(performedBy);
-
-            var controllerSync = new ControllerSyncDTO
-            {
-                ControllerKey = controller.ControllerKey,
-                BedNumber = controller.BedNumber,
-                IpAddress = controller.IpAddress,
-                FirmwareVersion = controller.FirmwareVersion,
-                IsActive = controller.IsActive,
-                PerformedBy = performedBy
-            };
-            await updateDevicePublisher.PublishUpdateControllerAsync(controllerSync);
-
-            foreach (var sensor in controller.Sensors)
-            {
-                var sensorSync = new SensorSyncDTO
-                {
-                    SensorKey = sensor.SensorKey,
-                    ControllerKey = controller.ControllerKey,
-                    Type = sensor.Type,
-                    Unit = sensor.Unit,
-                    Description = sensor.Description,
-                    IsActive = sensor.IsActive,
-                    PerformedBy = performedBy
-                };
-                await updateDevicePublisher.PublishUpdateSensorAsync(sensorSync);
-            }
-        }
-
-        public async Task ReactivateSensorAsync(string sensorKey, string performedBy)
-        {
-            var repo = unitOfWork.GetRepository<IEdgeDeviceRepository>();
-            var sensor = await repo.GetSensorBySensorKeyAsTrackingInactive(sensorKey);
+            var sensor = controller.Sensors.FirstOrDefault(s => s.SensorKey == dto.SensorKey);
             if (sensor == null)
-                throw new DeviceNotFound(
-                    $"Sensor with key '{sensorKey}' not found or already active.");
+                throw new DeviceNotFound($"Sensor with key:{dto.SensorKey} not found");
 
-            // Force activation
-            sensor.UpdateActive(true);
-            await unitOfWork.CommitAsync(performedBy);
+            // remove sensor
+            controller.RemoveSensor(dto.SensorKey);
 
-            var sensorSync = new SensorSyncDTO
-            {
-                SensorKey = sensor.SensorKey,
-                ControllerKey = sensor.ControllerKey,
-                Type = sensor.Type,
-                Unit = sensor.Unit,
-                Description = sensor.Description,
-                IsActive = sensor.IsActive,
-                PerformedBy = performedBy
-            };
-            await updateDevicePublisher.PublishUpdateSensorAsync(sensorSync);
+            await unitOfWork.CommitAsync(dto.PerformedBy);
+
+            // publish sensor update
+            await PublishSensorUnassign(sensor, edge.EdgeKey, dto.PerformedBy ?? string.Empty, DateTime.UtcNow);
         }
 
-        // Grpc service for Patient MS
         public async Task<DeviceProfileControllerDTO> GetControllerMetaAsync(string controllerKey)
         {
             var repo = unitOfWork.GetRepository<IEdgeDeviceRepository>();
 
-            var controller = await repo.GetControllerByControllerKeyAsTracking(controllerKey);
-            if (controller == null)
-                throw new DeviceNotFound($"{controllerKey} is not a not found");
-
-            var edge = await repo.GetEdgeDeviceByEdgeKey(controller.EdgeKey);
-            if (edge == null)
-                throw new DeviceNotFound($"{controller.EdgeKey} is not a not found");
-
-
-            return new DeviceProfileControllerDTO
+            // Strategy: iterate all edges, fetch each including controllers (uses GetEdgeDeviceByEdgeKey), find the controller
+            // This avoids needing a specialized repo method while ensuring controllers are included.
+            var edges = (await repo.GetAllWithFilter(string.Empty, 1, int.MaxValue)).ToList();
+            foreach (var e in edges)
             {
-                // Controller info
-                ControllerKey = controller.ControllerKey,
-                BedNumber = controller.BedNumber,
-                FirmwareVersion = controller.FirmwareVersion,
-                IsActive = controller.IsActive,
-                Status = controller.Status,
+                // fetch the full edge with includes
+                var fullEdge = await repo.GetEdgeDeviceByEdgeKey(e.EdgeKey);
+                if (fullEdge == null) continue;
 
-                // Edge device info
-                EdgeKey = edge?.EdgeKey ?? string.Empty,
-                RoomName = edge?.RoomName ?? string.Empty,
-                IpAddress = edge?.IpAddress ?? string.Empty,
-                Description = edge?.Description ?? string.Empty,
-
-                // Sensors
-                Sensors = controller.Sensors.Select(s => new DeviceProfileSensorDTO
+                var controller = fullEdge.Controllers.FirstOrDefault(c => c.ControllerKey == controllerKey);
+                if (controller != null)
                 {
-                    SensorKey = s.SensorKey,
-                    Type = s.Type,
-                    Unit = s.Unit,
-                    Description = s.Description,
-                    IsActive = s.IsActive
-                }).ToList()
-            };
+                    return new DeviceProfileControllerDTO
+                    {
+                        ControllerKey = controller.ControllerKey,
+                        BedNumber = controller.BedNumber,
+                        FirmwareVersion = controller.FirmwareVersion,
+                        IsActive = controller.IsActive,
+                        Status = controller.Status,
+
+                        EdgeKey = fullEdge.EdgeKey,
+                        RoomName = fullEdge.RoomName,
+                        IpAddress = fullEdge.IpAddress,
+                        Description = fullEdge.Description,
+
+                        Sensors = controller.Sensors.Select(s => new DeviceProfileSensorDTO
+                        {
+                            SensorKey = s.SensorKey,
+                            Type = s.Type,
+                            Unit = s.Unit,
+                            Description = s.Description,
+                            IsActive = s.IsActive
+                        }).ToList()
+                    };
+                }
+            }
+
+            throw new DeviceNotFound($"Controller '{controllerKey}' not found");
         }
         #endregion
 
         #region Private Helpers
-        private async Task PublishEdgeDeviceAsync(EdgeDevice device, string performedBy)
+        private async Task PublishEdgeDeviceUpdateAsync(EdgeDevice device, string performedBy)
         {
-            // Publish EdgeDevice Sync
-            foreach (var controller in device.Controllers)
+            var syncDto = new UpdateEdgeDeviceDTO
             {
-                var syncDto = new EdgeDeviceSyncDTO
-                {
-                    IpAddress = null,
-                    IsActive = controller.IsActive,
-                    ControllerKey = controller.ControllerKey,
-                    RoomName = device.RoomName,
-                    PerformedBy = performedBy
-                };
-                await updateDevicePublisher.PublishUpdateEdgeAsync(syncDto);
-
-                await PublishControllerAsync(controller, performedBy);
-            }
+                EdgeKey = device.EdgeKey,
+                IpAddress = device.IpAddress,
+                RoomName = device.RoomName,
+                IsActive = device.IsActive,
+                PerformedBy = performedBy
+            };
+            await updateDevicePublisher.PublishUpdateEdgeAsync(syncDto);
         }
 
-        private async Task PublishControllerAsync(Controller controller, string performedBy)
+        private async Task PublishControllerUpdateAsync(Controller controller, string performedBy)
         {
             // Publish the controller first
-            var controllerDto = new ControllerSyncDTO
+            var controllerDto = new UpdateControllerDTO
             {
+                EdgeKey = controller.EdgeKey,
                 ControllerKey = controller.ControllerKey,
                 BedNumber = controller.BedNumber,
-                FirmwareVersion = controller.FirmwareVersion,
                 IpAddress = controller.IpAddress,
                 IsActive = controller.IsActive,
                 PerformedBy = performedBy
@@ -472,23 +426,46 @@ namespace Application.Service
             // Publish all child sensors
             foreach (var sensor in controller.Sensors)
             {
-                await PublishSensorAsync(sensor, performedBy);
+                await PublishSensorUpdateAsync(sensor, controller.EdgeKey, performedBy);
             }
         }
 
-        private async Task PublishSensorAsync(Sensor sensor, string performedBy)
+        private async Task PublishSensorUpdateAsync(Sensor sensor, string edgeKey, string performedBy)
         {
-            var sensorDto = new SensorSyncDTO
+            var sensorDto = new UpdateSensorDTO
             {
-                SensorKey = sensor.SensorKey,
+                EdgeKey = edgeKey,
                 ControllerKey = sensor.ControllerKey,
-                Type = sensor.Type,
-                Unit = sensor.Unit,
-                Description = sensor.Description,
+                SensorKey = sensor.SensorKey,
                 IsActive = sensor.IsActive,
                 PerformedBy = performedBy
             };
             await updateDevicePublisher.PublishUpdateSensorAsync(sensorDto);
+        }
+
+        private async Task PublishSensorAssign(Sensor sensor, string edgeKey, string performedBy)
+        {
+            var sensorDto = new PatientSensorCreate()
+            {
+                EdgeKey = edgeKey,
+                ControllerKey = sensor.ControllerKey,
+                SensorKey = sensor.SensorKey,
+                PerformedBy = performedBy
+            };
+            await sensorAssignmentPublisher.AssignSensor(sensorDto);
+        }
+
+        private async Task PublishSensorUnassign(Sensor sensor, string edgeKey, string performedBy, DateTime unassignedAt)
+        {
+            var sensorDto = new PatientSensorRemove()
+            {
+                EdgeKey = edgeKey,
+                ControllerKey = sensor.ControllerKey,
+                SensorKey = sensor.SensorKey,
+                UnassignedAt = unassignedAt,
+                PerformedBy = performedBy
+            };
+            await sensorAssignmentPublisher.UnassignSensor(sensorDto);
         }
         #endregion
     }

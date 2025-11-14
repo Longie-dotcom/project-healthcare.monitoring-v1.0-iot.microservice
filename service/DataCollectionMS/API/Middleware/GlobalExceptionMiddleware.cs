@@ -60,7 +60,8 @@ namespace API.Middleware
                     break;
 
                 // Not Found Exceptions - 404 Not Found
-                case DeviceProfileNotFound or RoomProfileNotFound or PatientSensorNotFound:
+                case DeviceProfileNotFound or RoomProfileNotFound 
+                or PatientSensorNotFound or StaffAssignmentNotFound:
                     _logger.LogWarning(exception, "Resource not found: {ExceptionType}", exception.GetType().Name);
                     context.Response.StatusCode = StatusCodes.Status404NotFound;
                     response.ErrorCode = "404 - Not Found";

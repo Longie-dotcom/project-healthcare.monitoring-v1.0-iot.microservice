@@ -18,22 +18,19 @@ namespace Infrastructure.Messaging.Publisher
             _logger = logger;
         }
 
-        public async Task PublishAsync(IAMSyncUpdateDTO dto)
+        public async Task PublishAsync(UpdateUser dto)
         {
-            _logger.LogInformation("Publishing IAM update for {IdentityNumber}", dto.IdentityNumber);
-
-            // Email and phone can not be updated from patient service
-            var mappedDto = new UpdateUser()
+            try
             {
-                IdentityNumber = dto.IdentityNumber,
-                PerformedBy = dto.PerformedBy,
-                Address = dto.Address,
-                Dob = dto.DateOfBirth,
-                Name = dto.FullName,
-                Gender = dto.Gender,
-            };
-
-            await _publishEndpoint.Publish(mappedDto);
+                _logger.LogInformation(
+                    $"Publishing update information for patient {dto.IdentityNumber}");
+                await _publishEndpoint.Publish(dto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(
+                    $"Failed when published update information for patient {dto.IdentityNumber}: {ex.Message}");
+            }
         }
     }
 }

@@ -26,9 +26,9 @@ namespace API.Controllers
         #region Methods
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RoomProfileDTO>>> GetDeviceProfiles()
+        public async Task<ActionResult<IEnumerable<RoomProfileDTO>>> GetRoomProfiles()
         {
-            var profiles = await roomProfileService.GetDeviceProfilesAsync();
+            var profiles = await roomProfileService.GetRoomProfilesAsync();
             return Ok(profiles);
         }
         #endregion

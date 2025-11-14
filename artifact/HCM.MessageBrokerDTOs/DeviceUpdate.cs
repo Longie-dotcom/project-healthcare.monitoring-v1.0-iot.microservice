@@ -1,5 +1,6 @@
 ﻿namespace HCM.MessageBrokerDTOs
 {
+    // Publish from device management ms when any devices updated
     public class UpdateEdgeDeviceDTO
     {
         public string EdgeKey { get; set; } = string.Empty;

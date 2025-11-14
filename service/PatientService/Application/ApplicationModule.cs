@@ -25,7 +25,7 @@ namespace Application
             services.AddScoped<IPatientStatusService, PatientStatusService>();
 
             // gRPC Service
-            services.AddScoped<IAMGrpcService>();
+            services.AddScoped<PatientGrpcService>();
             return services;
 
         }

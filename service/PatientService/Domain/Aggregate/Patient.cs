@@ -134,27 +134,33 @@ namespace Domain.Aggregate
         #endregion
 
         #region Methods - Bed Assignment
-        public void AssignBed(PatientBedAssignment bedAssignment)
+        public PatientBedAssignment? AssignBed(PatientBedAssignment bedAssignment)
         {
             if (bedAssignment == null)
                 throw new InvalidPatientAggregateException("BedAssignment cannot be null.");
 
-            // Only one active bed per patient
-            var activeBed = patientBedAssignments.FirstOrDefault(b => b.IsActive);
+            // Only one bed per patient
+            var activeBed = patientBedAssignments
+                .FirstOrDefault(b => b.ReleasedAt == null);
             if (activeBed != null)
-                activeBed.ReleaseBed(bedAssignment.AssignedAt);
+            {
+                activeBed.ReleaseBed();
+                return activeBed; // Let service layer publish the unassignment
+            }
 
             patientBedAssignments.Add(bedAssignment);
+            return null;
         }
 
-        public void ReleaseBed(Guid bedAssignmentID, DateTime releasedAt)
+        public PatientBedAssignment ReleaseBed(Guid bedAssignmentID, DateTime releasedAt)
         {
             var bed = patientBedAssignments
                 .FirstOrDefault(b => b.PatientBedAssignmentID == bedAssignmentID);
             if (bed == null) throw new InvalidPatientAggregateException(
                 "BedAssignment not found.");
 
-            bed.ReleaseBed(releasedAt);
+            bed.ReleaseBed();
+            return bed; // Let service layer publish the unassignment
         }
         #endregion
 
@@ -162,26 +168,27 @@ namespace Domain.Aggregate
         public void AssignStaff(PatientStaffAssignment staffAssignment)
         {
             if (staffAssignment == null)
-                throw new InvalidPatientAggregateException(
-                    "StaffAssignment cannot be null.");
+                throw new InvalidPatientAggregateException("StaffAssignment cannot be null.");
 
             // Prevent duplicate active assignments
-            var active = patientStaffAssignment
-                .FirstOrDefault(s => s.StaffIdentityNumber == staffAssignment.StaffIdentityNumber && s.IsActive);
-            if (active != null) return;
+            var activeStaff = patientStaffAssignment
+                .FirstOrDefault(s => s.StaffIdentityNumber == staffAssignment.StaffIdentityNumber && s.UnassignedAt == null);
+            if (activeStaff != null) 
+                throw new InvalidPatientAggregateException("Staff has been assigned to this patient already");
 
             patientStaffAssignment.Add(staffAssignment);
         }
 
-        public void UnassignStaff(Guid staffAssignmentID, DateTime unassignedAt)
+        public PatientStaffAssignment UnassignStaff(Guid staffAssignmentID, DateTime unassignedAt)
         {
             var assignment = patientStaffAssignment
-                .FirstOrDefault(s => s.PatientStaffAssignmentID == staffAssignmentID && s.IsActive);
+                .FirstOrDefault(s => s.PatientStaffAssignmentID == staffAssignmentID && s.UnassignedAt == null);
             if (assignment == null)
                 throw new InvalidPatientAggregateException(
                     "Active staff assignment not found.");
 
-            assignment.Unassign(unassignedAt);
+            assignment.Unassign();
+            return assignment;
         }
         #endregion
 

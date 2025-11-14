@@ -1,5 +1,4 @@
-﻿using Application.DTO;
-using Application.Interface.IService;
+﻿using Application.Interface.IService;
 using HCM.MessageBrokerDTOs;
 using MassTransit;
 
@@ -22,24 +21,15 @@ namespace Infrastructure.Messaging.Consumer
         #region Methods
         public async Task Consume(ConsumeContext<UpdateUser> context)
         {
+            var message = context.Message;
+
             try
             {
-                var message = context.Message;
-                await patientService.SyncUpdateAsync(new IAMSyncUpdateDTO()
-                {
-                    PerformedBy = message.PerformedBy,
-                    IdentityNumber = message.IdentityNumber,
-                    Address = message.Address,
-                    DateOfBirth = message.Dob,
-                    FullName = message.Name,
-                    Gender = message.Gender,
-                    Phone = message.Phone,
-                    Email = message.Email,
-                });
+                await patientService.SyncUpdateAsync(message);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error consuming update user message: {ex}");
+                Console.WriteLine($"Error consuming update user message: {ex} for patient: {message.IdentityNumber}");
                 throw;
             }
         }

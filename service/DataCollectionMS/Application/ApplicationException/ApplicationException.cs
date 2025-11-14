@@ -28,4 +28,10 @@
         public PatientSensorNotFound(string message)
             : base(message) { }
     }
+
+    public class StaffAssignmentNotFound : ApplicationExceptionBase
+    {
+        public StaffAssignmentNotFound(string message)
+            : base(message) { }
+    }
 }

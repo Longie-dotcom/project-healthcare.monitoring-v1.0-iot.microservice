@@ -35,6 +35,7 @@ namespace Domain.Aggregate
         {
             ValidateEdgeDeviceID(edgeDeviceID);
             ValidateEdgeKey(edgeKey);
+            ValidateRoomName(roomName);
             ValidateIpAddress(ipAddress);
 
             EdgeDeviceID = edgeDeviceID;
@@ -49,6 +50,7 @@ namespace Domain.Aggregate
         #region Methods
         public void UpdateRoomName(string roomName)
         {
+            ValidateRoomName(roomName);
             RoomName = roomName;
         }
 
@@ -67,25 +69,15 @@ namespace Domain.Aggregate
         {
             if (!IsActive) return;
             IsActive = false;
-
-            foreach (var controller in controllers)
-            {
-                controller.Deactivate();
-            }
         }
 
         public void Activate()
         {
             if (IsActive) return;
             IsActive = true;
-
-            foreach (var controller in controllers)
-            {
-                controller.Activate();
-            }
         }
 
-
+        // For assignment
         public void AddController(Controller controller)
         {
             if (controller == null)
@@ -105,6 +97,16 @@ namespace Domain.Aggregate
             }
 
             controllers.Add(controller);
+        }
+
+        // For unassignment
+        public void RemoveController(string controllerKey)
+        {
+            var controller = controllers.FirstOrDefault(c => c.ControllerKey == controllerKey);
+            if (controller != null)
+            {
+                controllers.Remove(controller);
+            }
         }
         #endregion
 
@@ -128,6 +130,13 @@ namespace Domain.Aggregate
             if (string.IsNullOrWhiteSpace(ipAddress))
                 throw new InvalidEdgeDeviceAggregateException(
                     "IpAddress cannot be empty.");
+        }
+
+        private void ValidateRoomName(string roomName)
+        {
+            if (string.IsNullOrWhiteSpace(roomName))
+                throw new InvalidEdgeDeviceAggregateException(
+                    "RoomName cannot be empty.");
         }
         #endregion
     }

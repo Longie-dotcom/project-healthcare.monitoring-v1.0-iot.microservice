@@ -162,6 +162,12 @@ namespace Domain.Entity
         {
             UnassignedAt = DateTime.UtcNow;
             IsActive = false;
+
+            foreach (var s in Sensors.Where(s => s.UnassignedAt == null))
+                s.Unassign();
+
+            foreach (var st in PatientStaffs.Where(st => st.UnassignedAt == null))
+                st.Unassign();
         }
         #endregion
     }

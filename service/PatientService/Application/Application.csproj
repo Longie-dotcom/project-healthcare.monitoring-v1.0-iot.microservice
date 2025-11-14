@@ -12,6 +12,8 @@
     <PackageReference Include="Google.Protobuf" Version="3.33.0" />
     <PackageReference Include="Grpc.Core.Api" Version="2.71.0" />
     <PackageReference Include="HCM.CodeFormatter" Version="1.0.1" />
+    <PackageReference Include="HCM.MessageBrokerDTOs" Version="1.0.8" />
+    <PackageReference Include="HCM.Patient.Server.Grpc" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.9" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
   </ItemGroup>

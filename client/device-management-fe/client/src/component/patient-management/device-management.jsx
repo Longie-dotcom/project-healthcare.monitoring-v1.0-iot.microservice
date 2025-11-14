@@ -21,8 +21,6 @@ function DeviceManagement() {
   const [detailedDevice, setDetailedDevice] = useState(null);
   const [deletedDevice, setDeletedDevice] = useState(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
-  const [reactiveDevice, setReactiveDevice] = useState(null);
-  const [showConfirmReactive, setShowConfirmReactive] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 5;
@@ -30,18 +28,19 @@ function DeviceManagement() {
   const [search, setSearch] = useState("");
 
   const {
-    getDevices,
-    addDevice,
-    updateDevice,
-    deleteDevice,
     getDeviceById,
+    getDevices,
+    createDevice,
+    updateDevice,
+    deactivateDevice,
+    
     assignController,
-    assignSensor,
-    unassignSensor,
+    updateController,
     unassignController,
-    reactivateController,
-    reactivateEdge,
-    reactivateSensor
+
+    assignSensor,
+    updateSensor,
+    unassignSensor,
   } = useEdgeDevices({ setLoading, setError, setInfo, setReload });
 
   useEffect(() => {
@@ -83,11 +82,6 @@ function DeviceManagement() {
     setDetailedDevice(data);
   };
 
-  const handleReactive = async (device) => {
-    setReactiveDevice(device);
-    setShowConfirmReactive(true);
-  };
-
   return (
     <div id="device-management">
       {loading && <Loading />}
@@ -98,24 +92,11 @@ function DeviceManagement() {
           title="Confirm Delete"
           message={`Are you sure you want to delete ${deletedDevice.deviceKey}?`}
           onConfirm={async () => {
-            const result = await deleteDevice({ edgeDeviceID: deletedDevice.edgeDeviceID });
+            const result = await deactivateDevice({ edgeDeviceID: deletedDevice.edgeDeviceID });
             if (result) setReload((prev) => prev + 1);
             setShowConfirmDelete(false);
           }}
           onCancel={() => setShowConfirmDelete(false)}
-        />
-      )}
-
-      {showConfirmReactive && reactiveDevice && (
-        <ConfirmBox
-          title="Confirm Reactive"
-          message={`Are you sure you want to reactive ${reactiveDevice.edgeKey}?`}
-          onConfirm={async () => {
-            const result = await reactivateEdge({ edgeKey: reactiveDevice.edgeKey });
-            if (result) setReload((prev) => prev + 1);
-            setShowConfirmReactive(false);
-          }}
-          onCancel={() => setShowConfirmReactive(false)}
         />
       )}
 
@@ -162,9 +143,6 @@ function DeviceManagement() {
                       <button className="btn update" onClick={() => handleUpdate(d)}>Update</button>
                     )}
                     <button className="btn detail" onClick={() => handleDetail(d)}>Detail</button>
-                    {!detailedDevice && (
-                      <button className="btn detail non-gray-out" onClick={() => handleReactive(d)}>Reactive</button>
-                    )}
                   </div>
                 </div>
               ))}
@@ -200,8 +178,8 @@ function DeviceManagement() {
             unassignController={unassignController}
             unassignSensor={unassignSensor}
             setReloadDetail={setReloadDetail}
-            reactivateController={reactivateController}
-            reactivateSensor={reactivateSensor}
+            updateSensor={updateSensor}
+            updateController={updateController}
           />
         </div>
       ) : (
@@ -212,7 +190,7 @@ function DeviceManagement() {
       <CreateDeviceForm
         visible={openCreateForm}
         onClose={() => setOpenCreateForm(false)}
-        addDevice={addDevice}
+        createDevice={createDevice}
       />
 
       {updatedDevice && (

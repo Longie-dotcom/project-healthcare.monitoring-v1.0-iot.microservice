@@ -70,72 +70,6 @@ namespace Infrastructure.Persistence.Repository
                 .FirstOrDefaultAsync(e => e.EdgeKey == edgeKey && e.IsActive);
         }
 
-        public async Task<Controller?> GetControllerByControllerKey(string controllerKey)
-        {
-            return await context.Controllers
-                .AsNoTracking()
-                .Include(c => c.Sensors)
-                .FirstOrDefaultAsync(e => e.ControllerKey == controllerKey && e.IsActive);
-        }
-
-        public async Task<Controller?> GetControllerByControllerKeyAsTracking(string controllerKey)
-        {
-            return await context.Controllers
-                .AsTracking()
-                .Include(c => c.Sensors)
-                .FirstOrDefaultAsync(e => e.ControllerKey == controllerKey && e.IsActive);
-        }
-
-        public async Task<Sensor?> GetSensorBySensorKeyAsTracking(string sensorKey)
-        {
-            return await context.Sensors
-                .AsTracking()
-                .FirstOrDefaultAsync(e => e.SensorKey == sensorKey && e.IsActive);
-        }
-
-        public async Task<EdgeDevice?> GetEdgeDeviceByEdgeKeyAsTrackingInactive(
-            string edgeKey)
-        {
-            return await context.EdgeDevices
-                .AsTracking()
-                .Include(e => e.Controllers)
-                    .ThenInclude(c => c.Sensors)
-                .FirstOrDefaultAsync(e => e.EdgeKey == edgeKey && !e.IsActive);
-        }
-
-        public async Task<Controller?> GetControllerByControllerKeyAsTrackingInactive(
-            string controllerKey)
-        {
-            return await context.Controllers
-                .AsTracking()
-                .Include(c => c.Sensors)
-                .FirstOrDefaultAsync(e => e.ControllerKey == controllerKey && !e.IsActive);
-        }
-
-        public async Task<Sensor?> GetSensorBySensorKeyAsTrackingInactive(
-            string sensorKey)
-        {
-            return await context.Sensors
-                .AsTracking()
-                .FirstOrDefaultAsync(e => e.SensorKey == sensorKey && !e.IsActive);
-        }
-
-        public async Task<bool> IsBedAssignedAsync(string edgeKey, string bedNumber)
-        {
-            var edge = await dbSet
-                .Include(e => e.Controllers)
-                .FirstOrDefaultAsync(e => e.EdgeKey == edgeKey);
-
-            if (edge == null) return false;
-
-            return edge.Controllers.Any(c => c.BedNumber == bedNumber);
-        }
-
-        public async Task<bool> IsRoomAssignedAsync(string roomName)
-        {
-            return await dbSet.AnyAsync(e => e.RoomName == roomName);
-        }
-
         public void AssignController(Controller controller)
         {
             context.Controllers.Add(controller);
@@ -144,6 +78,11 @@ namespace Infrastructure.Persistence.Repository
         public void AssignSensor(Sensor sensor)
         {
             context.Sensors.Add(sensor);
+        }
+
+        public async Task<bool> IsRoomAssignedAsync(string roomName)
+        {
+            return await dbSet.AnyAsync(e => e.RoomName == roomName);
         }
         #endregion
     }

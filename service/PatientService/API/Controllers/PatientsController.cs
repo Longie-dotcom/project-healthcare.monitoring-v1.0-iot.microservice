@@ -75,8 +75,8 @@ namespace API.Controllers
         public async Task<IActionResult> AssignBed(
             Guid patientId, [FromBody] AssignBedDTO dto)
         {
-            await patientService.AssignBedAsync(patientId, dto);
-            return Ok(new { message = "Bed assigned successfully." });
+            string message = await patientService.AssignBedAsync(patientId, dto);
+            return Ok(new { message });
         }
 
         [AuthorizePrivilege("ReleasePatientBed")]

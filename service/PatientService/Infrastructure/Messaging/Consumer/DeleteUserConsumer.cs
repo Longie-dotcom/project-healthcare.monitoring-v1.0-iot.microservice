@@ -1,5 +1,4 @@
-﻿using Application.DTO;
-using Application.Interface.IService;
+﻿using Application.Interface.IService;
 using HCM.MessageBrokerDTOs;
 using MassTransit;
 
@@ -22,18 +21,15 @@ namespace Infrastructure.Messaging.Consumer
         #region Methods
         public async Task Consume(ConsumeContext<DeleteUser> context)
         {
+            var message = context.Message;
+
             try
             {
-                var message = context.Message;
-                await patientService.SyncDeleteAsync(new IAMSyncDeleteDTO()
-                {
-                    IdentityNumber = message.IdentityNumber,
-                    PerformedBy = message.PerformedBy,
-                });
+                await patientService.SyncDeleteAsync(message);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error consuming delete user message: {ex}");
+                Console.WriteLine($"Error consuming delete user message: {ex} for patient: {message.IdentityNumber}");
                 throw;
             }
         }

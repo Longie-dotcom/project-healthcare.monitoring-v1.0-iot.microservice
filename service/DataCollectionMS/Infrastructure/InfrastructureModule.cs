@@ -94,6 +94,8 @@ namespace Infrastructure
                     x.AddConsumer<UpdateUserConsumer>();
                     x.AddConsumer<CreateDeviceProfileConsumer>();
                     x.AddConsumer<UpdateDeviceProfileConsumer>();
+                    x.AddConsumer<RemoveDeviceProfileConsumer>();
+                    x.AddConsumer<PatientStaffAssignmentConsumer>();
 
                     x.UsingRabbitMq((context, cfg) =>
                     {
@@ -129,6 +131,16 @@ namespace Infrastructure
                         cfg.ReceiveEndpoint("data_collection_update_profile_consumer_queue", e =>
                         {
                             e.ConfigureConsumer<UpdateDeviceProfileConsumer>(context);
+                        });
+
+                        cfg.ReceiveEndpoint("data_collection_remove_profile_consumer_queue", e =>
+                        {
+                            e.ConfigureConsumer<RemoveDeviceProfileConsumer>(context);
+                        });
+
+                        cfg.ReceiveEndpoint("data_collection_staff_assignment_consumer_queue", e =>
+                        {
+                            e.ConfigureConsumer<PatientStaffAssignmentConsumer>(context);
                         });
                     });
                 });

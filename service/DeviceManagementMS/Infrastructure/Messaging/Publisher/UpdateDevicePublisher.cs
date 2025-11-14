@@ -1,5 +1,4 @@
-﻿using Application.DTO;
-using Application.Interface.IMessagePublisher;
+﻿using Application.Interface.IMessagePublisher;
 using HCM.MessageBrokerDTOs;
 using MassTransit;
 using Microsoft.Extensions.Logging;
@@ -24,58 +23,25 @@ namespace Infrastructure.Messaging.Publisher
         }
 
         #region Methods
-        public async Task PublishUpdateControllerAsync(ControllerSyncDTO dto)
+        public async Task PublishUpdateEdgeAsync(UpdateEdgeDeviceDTO dto)
         {
             _logger.LogInformation(
-                $"Publish update controller with key: {dto.ControllerKey}");
-
-            var mappedDto = new UpdateControllerDTO()
-            {
-                BedNumber = dto.BedNumber,
-                ControllerKey = dto.ControllerKey,
-                FirmwareVersion = dto.FirmwareVersion,
-                IpAddress = dto.IpAddress,
-                IsActive = dto.IsActive,
-                PerformedBy = dto.PerformedBy,
-            };
-
-            await _publishEndpoint.Publish(mappedDto);
+                $"Publish update edge with key: {dto.EdgeKey}");
+            await _publishEndpoint.Publish(dto);
         }
 
-        public async Task PublishUpdateEdgeAsync(EdgeDeviceSyncDTO dto)
+        public async Task PublishUpdateControllerAsync(UpdateControllerDTO dto)
         {
             _logger.LogInformation(
-                $"Publish update controller with key: {dto.ControllerKey}");
-
-            var mappedDto = new UpdateEdgeDeviceDTO()
-            {
-                ControllerKey = dto.ControllerKey,
-                IpAddress = dto.IpAddress,
-                IsActive = dto.IsActive,
-                PerformedBy = dto.PerformedBy,
-                RoomName = dto.RoomName,
-            };
-
-            await _publishEndpoint.Publish(mappedDto);
+                $"Publish update controller with key: {dto.ControllerKey} at the edge: {dto.EdgeKey}");
+            await _publishEndpoint.Publish(dto);
         }
 
-        public async Task PublishUpdateSensorAsync(SensorSyncDTO dto)
+        public async Task PublishUpdateSensorAsync(UpdateSensorDTO dto)
         {
             _logger.LogInformation(
-                $"Publish update sensor of controller: {dto.ControllerKey} with key: {dto.SensorKey}");
-
-            var mappedDto = new UpdateSensorDTO()
-            {
-                ControllerKey = dto.ControllerKey,
-                IsActive = dto.IsActive,
-                SensorKey = dto.SensorKey,
-                Description = dto.Description,
-                Type = dto.Type,
-                Unit = dto.Unit,
-                PerformedBy = dto.PerformedBy,
-            };
-
-            await _publishEndpoint.Publish(mappedDto);
+                $"Publish update sensor with key: {dto.SensorKey} of controller: {dto.ControllerKey} at the edge: {dto.EdgeKey}");
+            await _publishEndpoint.Publish(dto);
         }
         #endregion
     }

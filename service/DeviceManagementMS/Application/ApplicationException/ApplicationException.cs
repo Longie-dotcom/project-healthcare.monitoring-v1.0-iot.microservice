@@ -19,4 +19,15 @@
     {
         public BedOccupied(string message) : base(message) { }
     }
+
+    public class BedInUse : ApplicationExceptionBase
+    {
+        public BedInUse(string message) : base(message) { }
+    }
+
+    public class IPAddressConflicting : ApplicationExceptionBase
+    {
+        public IPAddressConflicting(string message) : base(message) { }
+    }
 }
+

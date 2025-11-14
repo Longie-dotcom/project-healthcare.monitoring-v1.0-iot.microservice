@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./create-device-form.css";
 
-function CreateDeviceForm({ visible, onClose, addDevice }) {
+function CreateDeviceForm({ visible, onClose, createDevice }) {
   const [formData, setFormData] = useState({
     roomName: "",
     ipAddress: "",
@@ -18,7 +18,7 @@ function CreateDeviceForm({ visible, onClose, addDevice }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await addDevice(formData);
+    await createDevice(formData);
     onClose();
   };
 

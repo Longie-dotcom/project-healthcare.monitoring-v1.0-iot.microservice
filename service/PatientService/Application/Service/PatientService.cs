@@ -9,6 +9,7 @@ using Domain.Aggregate;
 using Domain.Entity;
 using Domain.IRepository;
 using HCM.CodeFormatter;
+using HCM.MessageBrokerDTOs;
 
 namespace Application.Service
 {
@@ -20,7 +21,8 @@ namespace Application.Service
         private readonly IIAMGrpcClient iAMGrpcClient;
         private readonly IDeviceManagementGrpcClient deviceManagementGrpcClient;
         private readonly IUpdateUserPublisher updateUserPublisher;
-        private readonly ICreateDeviceProfilePublisher createDeviceProfilePublisher;
+        private readonly IDeviceProfileAssignmentPublisher deviceProfileAssignmentPublisher;
+        private readonly IStaffAssignmentPublisher staffAssignmentPublisher;
         #endregion
 
         #region Properties
@@ -32,14 +34,16 @@ namespace Application.Service
             IIAMGrpcClient iAMGrpcClient,
             IDeviceManagementGrpcClient deviceManagementGrpcClient,
             IUpdateUserPublisher updateUserPublisher,
-            ICreateDeviceProfilePublisher createDeviceProfilePublisher)
+            IDeviceProfileAssignmentPublisher deviceProfileAssignmentPublisher,
+            IStaffAssignmentPublisher staffAssignmentPublisher)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.iAMGrpcClient = iAMGrpcClient;
             this.deviceManagementGrpcClient = deviceManagementGrpcClient;
             this.updateUserPublisher = updateUserPublisher;
-            this.createDeviceProfilePublisher = createDeviceProfilePublisher;
+            this.deviceProfileAssignmentPublisher = deviceProfileAssignmentPublisher;
+            this.staffAssignmentPublisher = staffAssignmentPublisher;
         }
 
         #region Methods
@@ -47,9 +51,9 @@ namespace Application.Service
         {
             var repo = unitOfWork.GetRepository<IPatientRepository>();
             var patient = await repo.GetDetailedByIdAsync(patientId);
-            if (patient == null) 
-                throw new PatientNotFound(
-                    $"Patient with ID:{patientId} is not found");
+            if (patient == null)
+                throw new PatientNotFound($"Patient with ID:{patientId} not found or has been deactivated.");
+
             var patientDto = mapper.Map<PatientDTO>(patient);
             return patientDto;
         }
@@ -140,8 +144,8 @@ namespace Application.Service
             // Validate patient existence
             var patient = await repo.GetDetailedByIdAsync(patientId);
             if (patient == null)
-                throw new PatientNotFound(
-                    $"Patient with ID:{patientId} is not found");
+                throw new PatientNotFound($"Patient with ID:{patientId} not found or has been deactivated.");
+
             var patientDto = mapper.Map<PatientDTO>(patient);
 
             if (!string.IsNullOrEmpty(dto.PatientStatusCode))
@@ -178,20 +182,20 @@ namespace Application.Service
             await unitOfWork.CommitAsync(dto.PerformedBy);
 
             await updateUserPublisher.PublishAsync(
-                new IAMSyncUpdateDTO()
+                new UpdateUser()
                 {
-                    PerformedBy = dto.PerformedBy,
+                    PerformedBy = dto.PerformedBy ?? "",
                     IdentityNumber = patient.IdentityNumber,
-                    Address = dto.Address,
-                    Gender = dto.Gender,
-                    DateOfBirth = dto.DateOfBirth,
-                    FullName = dto.FullName,
+                    Address = patient.Address ?? "",
+                    Gender = patient.Gender ?? "",
+                    Dob = patient.Dob,
+                    Name = patient.FullName ?? "",
                 });
 
             return mapper.Map<PatientDTO>(patient);
         }
 
-        public async Task SyncUpdateAsync(IAMSyncUpdateDTO dto)
+        public async Task SyncUpdateAsync(UpdateUser dto)
         {
             await unitOfWork.BeginTransactionAsync();
 
@@ -201,14 +205,14 @@ namespace Application.Service
             var patient = await repo.GetPatientByIdentityNumber(dto.IdentityNumber);
             if (patient == null)
                 throw new PatientNotFound(
-                    $"Patient with identity number:{dto.IdentityNumber} is not found");
+                    $"Patient with identity number:{dto.IdentityNumber} is not found.");
             var patientDto = mapper.Map<PatientDTO>(patient);
 
             if (!string.IsNullOrEmpty(dto.Email))
                 patient.UpdateEmail(dto.Email);
 
-            if (!string.IsNullOrEmpty(dto.FullName))
-                patient.UpdateFullName(dto.FullName);
+            if (!string.IsNullOrEmpty(dto.Name))
+                patient.UpdateFullName(dto.Name);
 
             if (!string.IsNullOrEmpty(dto.Address))
                 patient.UpdateAddress(dto.Address);
@@ -216,8 +220,8 @@ namespace Application.Service
             if (!string.IsNullOrEmpty(dto.Gender))
                 patient.UpdateGender(dto.Gender);
 
-            if (dto.DateOfBirth != null)
-                patient.UpdateDob(dto.DateOfBirth ?? DateTime.MinValue);
+            if (dto.Dob != null)
+                patient.UpdateDob(dto.Dob ?? DateTime.MinValue);
 
             if (!string.IsNullOrEmpty(dto.Phone))
                 patient.UpdatePhone(dto.Phone);
@@ -231,168 +235,241 @@ namespace Application.Service
             var repo = unitOfWork.GetRepository<IPatientRepository>();
             var patient = await repo.GetDetailedByIdAsync(patientId);
             if (patient == null)
-                throw new PatientNotFound(
-                    $"Patient with ID:{patientId} is not found");
+                throw new PatientNotFound($"Patient with ID:{patientId} not found or has been deactivated.");
             patient.UpdateActive(false);
             await unitOfWork.CommitAsync(dto.PerformedBy);
         }
 
-        public async Task SyncDeleteAsync(IAMSyncDeleteDTO dto)
+        public async Task SyncDeleteAsync(DeleteUser dto)
         {
             await unitOfWork.BeginTransactionAsync();
             var repo = unitOfWork.GetRepository<IPatientRepository>();
             var patient = await repo.GetPatientByIdentityNumber(dto.IdentityNumber);
             if (patient == null)
                 throw new PatientNotFound(
-                    $"Patient with identity number:{dto.IdentityNumber} is not found");
+                    $"Patient with identity number:{dto.IdentityNumber} is not found.");
             patient.UpdateActive(false);
             await unitOfWork.CommitAsync(dto.PerformedBy);
         }
 
-        public async Task AssignBedAsync(Guid patientId, AssignBedDTO dto)
+        public async Task<string> AssignBedAsync(Guid patientId, AssignBedDTO dto)
         {
             var repo = unitOfWork.GetRepository<IPatientRepository>();
 
+            // Validate patient existence
             var patient = await repo.GetDetailedByIdAsync(patientId);
             if (patient == null)
-                throw new PatientNotFound($"Patient with ID:{patientId} not found.");
+                throw new PatientNotFound($"Patient with ID:{patientId} not found or has been deactivated.");
 
-            // Validate and get controller details from DeviceManagementMS
+            // Validate and populate device information
             var controllerProfile = await deviceManagementGrpcClient
                 .GetControllerMetaAsync(dto.ControllerKey);
             if (controllerProfile == null)
-                throw new DeviceNotFound(
-                    $"Controller with key {dto.ControllerKey} not found in DeviceManagementMS.");
+                throw new DeviceNotFound($"Controller with key {dto.ControllerKey} not found.");
 
-            // Begin DB transaction
             await unitOfWork.BeginTransactionAsync();
 
-            var bedAssignment = new PatientBedAssignment(
+            // Apply domain
+            var newBed = new PatientBedAssignment(
                 Guid.NewGuid(),
                 patientId,
                 dto.ControllerKey,
                 DateTime.UtcNow
             );
-
-            // Apply domain
-            patient.AssignBed(bedAssignment);
+            string message = "Assign patient to bed successfully";
+            var previousBed = patient.AssignBed(newBed);
+            if (previousBed != null)
+                message = "Move patient to other bed successfully";
             patient.UpdateStatus(PatientStatusEnum.Admitted);
 
             // Apply persistence
-            repo.AddBedAssignment(bedAssignment);
+            repo.AddBedAssignment(newBed);
             await unitOfWork.CommitAsync(dto.PerformedBy);
 
-            // Map to CreateDeviceProfileDTO for DataCollectionMS
-            var createProfileDto = new CreateDeviceProfileDTO
+            // Publish previous unassign (if existed)
+            if (previousBed != null)
+                await PublishBedUnassignAsync(patient, previousBed, dto.PerformedBy);
+
+            // Publish new assignment
+            await PublishBedAssignAsync(patient, newBed, dto.PerformedBy);
+
+            return message;
+        }
+
+        public async Task ReleaseBedAsync(Guid patientId, ReleaseBedDTO dto)
+        {
+            var repo = unitOfWork.GetRepository<IPatientRepository>();
+
+            // Validate patient existence
+            var patient = await repo.GetDetailedByIdAsync(patientId);
+            if (patient == null)
+                throw new PatientNotFound($"Patient with ID:{patientId} not found.");
+            
+            await unitOfWork.BeginTransactionAsync();
+
+            // Apply domain
+            var releasedBed = patient.ReleaseBed(dto.PatientBedAssignmentID, DateTime.UtcNow);
+            patient.UpdateStatus(PatientStatusEnum.Discharged);
+
+            // Apply persistence
+            await unitOfWork.CommitAsync(dto.PerformedBy);
+
+            // Publish unassignment
+            await PublishBedUnassignAsync(patient, releasedBed, dto.PerformedBy);
+        }
+
+        public async Task AssignStaffAsync(Guid patientId, AssignStaffDTO dto)
+        {
+            var repo = unitOfWork.GetRepository<IPatientRepository>();
+
+            // Validate patient existence
+            var patient = await repo.GetDetailedByIdAsync(patientId);
+            if (patient == null)
+                throw new PatientNotFound($"Patient with ID:{patientId} not found.");
+
+            // Validate staff existence
+            var user = await iAMGrpcClient.GetUser(dto.StaffIdentityNumber);
+            if (user == null)
+                throw new UserNotFound($"Staff {dto.StaffIdentityNumber} not found.");
+
+            await unitOfWork.BeginTransactionAsync();
+
+            // Apply domain
+            var staffAssignment = new PatientStaffAssignment(
+                Guid.NewGuid(),
+                patientId,
+                dto.StaffIdentityNumber,
+                DateTime.UtcNow
+            );
+            patient.AssignStaff(staffAssignment);
+
+            // Apply persistence
+            repo.AddStaffAssignment(staffAssignment);
+            await unitOfWork.CommitAsync(dto.PerformedBy);
+
+            // Publish new assignment
+            await PublishStaffAssignAsync(patient, staffAssignment, dto.PerformedBy);
+        }
+
+        public async Task UnassignStaffAsync(Guid patientId, UnassignStaffDTO dto)
+        {
+            var repo = unitOfWork.GetRepository<IPatientRepository>();
+
+            // Validate patient existence
+            var patient = await repo.GetDetailedByIdAsync(patientId);
+            if (patient == null)
+                throw new PatientNotFound($"Patient with ID:{patientId} not found.");
+
+            await unitOfWork.BeginTransactionAsync();
+
+            // Apply domain
+            var staffAssignment = patient.UnassignStaff(dto.PatientStaffAssignmentID, DateTime.UtcNow);
+
+            // Apply persistence
+            await unitOfWork.CommitAsync(dto.PerformedBy);
+
+            // Publish unassignment
+            await PublishStaffUnassignAsync(patient, staffAssignment, dto.PerformedBy);
+        }
+        #endregion
+
+        #region Private Helpers
+        private async Task PublishBedUnassignAsync(
+            Patient patient,
+            PatientBedAssignment oldBed,
+            string performedBy)
+        {
+            var controllerProfile = await deviceManagementGrpcClient
+                .GetControllerMetaAsync(oldBed.ControllerKey);
+
+            if (controllerProfile == null)
+                throw new DeviceNotFound($"Controller {oldBed.ControllerKey} not found.");
+
+            var dto = new DeviceProfileRemove
             {
-                PatientIdentityNumber = patient.IdentityNumber,
+                IdentityNumber = patient.IdentityNumber,
+                ControllerKey = oldBed.ControllerKey,
+                EdgeKey = controllerProfile.EdgeKey,
+                UnassignedAt = oldBed.ReleasedAt ?? DateTime.UtcNow,
+                PerformedBy = performedBy
+            };
+
+            await deviceProfileAssignmentPublisher.PublishUnassignDeviceProfile(dto);
+        }
+
+        private async Task PublishBedAssignAsync(
+            Patient patient,
+            PatientBedAssignment newBed,
+            string performedBy)
+        {
+            var controllerProfile = await deviceManagementGrpcClient
+                .GetControllerMetaAsync(newBed.ControllerKey);
+
+            if (controllerProfile == null)
+                throw new DeviceNotFound($"Controller {newBed.ControllerKey} not found.");
+
+            var dto = new DeviceProfileCreate
+            {
+                IdentityNumber = patient.IdentityNumber,
                 FullName = patient.FullName,
                 Dob = patient.Dob,
                 Gender = patient.Gender,
                 Email = patient.Email,
                 Phone = patient.Phone,
-                BedAssignedAt = bedAssignment.AssignedAt,
+                AssignedAt = newBed.AssignedAt,
                 ControllerKey = controllerProfile.ControllerKey,
                 BedNumber = controllerProfile.BedNumber,
                 EdgeKey = controllerProfile.EdgeKey,
-                RoomName = controllerProfile.RoomName,
                 IpAddress = controllerProfile.IpAddress,
-                FirmwareVersion = controllerProfile.FirmwareVersion,
                 IsActive = true,
+                PerformedBy = performedBy,
 
-                // Combine controller’s sensors (from DeviceManagementMS)
                 PatientSensors = controllerProfile.Sensors.Select(s => new PatientSensorDTO
                 {
                     SensorKey = s.SensorKey,
-                    AssignedAt = DateTime.UtcNow,
-                    UnassignedAt = null,
-                    IsActive = true
+                    AssignedAt = DateTime.UtcNow
                 }).ToList(),
 
-                // Include patient’s staff assignment if exists
                 PatientStaffs = patient.PatientStaffAssignment.Select(st => new PatientStaffDTO
                 {
                     StaffIdentityNumber = st.StaffIdentityNumber,
-                    AssignedAt = st.AssignedAt,
-                    UnassignedAt = st.UnassignedAt,
-                    IsActive = st.IsActive
+                    AssignedAt = st.AssignedAt
                 }).ToList()
             };
 
-            // Publish event to DataCollectionMS
-            await createDeviceProfilePublisher.PublishDeviceProfileAsync(createProfileDto);
+            await deviceProfileAssignmentPublisher.PublishAssignDeviceProfile(dto);
         }
 
-        public async Task ReleaseBedAsync(Guid patientId, ReleaseBedDTO dto)
+        private async Task PublishStaffAssignAsync(
+            Patient patient,
+            PatientStaffAssignment staffAssignment,
+            string performedBy)
         {
-            await unitOfWork.BeginTransactionAsync();
-            var repo = unitOfWork.GetRepository<IPatientRepository>();
+            var dto = new PatientStaffCreate
+            {
+                PatientIdentityNumber = patient.IdentityNumber,
+                StaffIdentityNumber = staffAssignment.StaffIdentityNumber,
+                AssignedAt = staffAssignment.AssignedAt,
+                PerformedBy = performedBy
+            };
 
-            var patient = await repo.GetDetailedByIdAsync(patientId);
-            if (patient == null)
-                throw new PatientNotFound($"Patient with ID:{patientId} not found.");
-
-            // Domain logic to release
-            patient.ReleaseBed(dto.PatientBedAssignmentID, DateTime.UtcNow);
-            patient.UpdateStatus(PatientStatusEnum.Discharged);
-
-            // Get the released assignment
-            var releasedBed = patient.PatientBedAssignments
-                .FirstOrDefault(b => b.PatientBedAssignmentID == dto.PatientBedAssignmentID);
-
-            await unitOfWork.CommitAsync(dto.PerformedBy);
+            await staffAssignmentPublisher.PublishAssignPatientStaff(dto);
         }
 
-        public async Task AssignStaffAsync(Guid patientId, AssignStaffDTO dto)
+        private async Task PublishStaffUnassignAsync(
+            Patient patient,
+            PatientStaffAssignment staffAssignment,
+            string performedBy)
         {
-            await unitOfWork.BeginTransactionAsync();
-            var repo = unitOfWork.GetRepository<IPatientRepository>();
+            var dto = new PatientStaffRemove
+            {
+                PatientIdentityNumber = patient.IdentityNumber,
+                StaffIdentityNumber = staffAssignment.StaffIdentityNumber,
+                UnassignedAt = staffAssignment.UnassignedAt ?? DateTime.UtcNow,
+                PerformedBy = performedBy
+            };
 
-            var patient = await repo.GetDetailedByIdAsync(patientId);
-            if (patient == null)
-                throw new PatientNotFound($"Patient with ID:{patientId} not found.");
-
-            // Validate patient via IAM
-            var user = await iAMGrpcClient.GetUser(dto.StaffIdentityNumber);
-            if (user == null)
-                throw new UserNotFound(
-                    $"Staff with identity number {dto.StaffIdentityNumber} is not found");
-
-
-            var staffAssignment = new PatientStaffAssignment(
-                Guid.NewGuid(),
-                patientId,
-                dto.StaffIdentityNumber,
-                DateTime.UtcNow,
-                true
-            );
-
-            // Domain logic
-            patient.AssignStaff(staffAssignment);
-
-            // Explicitly tell EF to insert
-            repo.AddStaffAssignment(staffAssignment);
-
-            await unitOfWork.CommitAsync(dto.PerformedBy);
-        }
-
-        public async Task UnassignStaffAsync(Guid patientId, UnassignStaffDTO dto)
-        {
-            await unitOfWork.BeginTransactionAsync();
-            var repo = unitOfWork.GetRepository<IPatientRepository>();
-
-            var patient = await repo.GetDetailedByIdAsync(patientId);
-            if (patient == null)
-                throw new PatientNotFound($"Patient with ID:{patientId} not found.");
-
-            // Domain logic
-            patient.UnassignStaff(dto.PatientStaffAssignmentID, DateTime.UtcNow);
-
-            // Get the unassigned record to remove
-            var unassigned = patient.PatientStaffAssignment
-                .FirstOrDefault(s => s.PatientStaffAssignmentID == dto.PatientStaffAssignmentID);
-
-            await unitOfWork.CommitAsync(dto.PerformedBy);
+            await staffAssignmentPublisher.PublishUnassignPatientStaff(dto);
         }
         #endregion
     }

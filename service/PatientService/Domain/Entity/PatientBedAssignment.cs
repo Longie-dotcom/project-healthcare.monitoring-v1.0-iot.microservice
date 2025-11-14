@@ -25,40 +25,25 @@ namespace Domain.Entity
             Guid patientBedAssignmentID,
             Guid patientID,
             string controllerKey,
-            DateTime assignedAt,
-            DateTime? releasedAt = null)
+            DateTime assignedAt)
         {
             ValidatePatientBedAssignmentID(patientBedAssignmentID);
             ValidatePatientID(patientID);
             ValidateControllerKey(controllerKey);
             ValidateAssignedAt(assignedAt);
-            ValidateReleasedAt(assignedAt, releasedAt);
 
             PatientBedAssignmentID = patientBedAssignmentID;
             PatientID = patientID;
             ControllerKey = controllerKey;
             AssignedAt = assignedAt;
-            ReleasedAt = releasedAt;
-            IsActive = releasedAt == null;
+            IsActive = true;
         }
 
         #region Methods
-        public void ReleaseBed(DateTime releasedAt)
+        public void ReleaseBed()
         {
-            ValidateReleasedAt(AssignedAt, releasedAt);
-            ReleasedAt = releasedAt;
+            ReleasedAt = DateTime.UtcNow;
             IsActive = false;
-        }
-
-        public void ReassignBed(DateTime newAssignedAt)
-        {
-            if (IsActive)
-                throw new InvalidPatientAggregateException(
-                    "Cannot reassign an active bed without releasing first.");
-
-            AssignedAt = newAssignedAt;
-            ReleasedAt = null;
-            IsActive = true;
         }
         #endregion
 
@@ -85,12 +70,6 @@ namespace Domain.Entity
         {
             if (assignedAt == default)
                 throw new InvalidPatientAggregateException("AssignedAt cannot be empty.");
-        }
-
-        private void ValidateReleasedAt(DateTime assignedAt, DateTime? releasedAt)
-        {
-            if (releasedAt.HasValue && releasedAt < assignedAt)
-                throw new InvalidPatientAggregateException("ReleasedAt cannot be before AssignedAt.");
         }
         #endregion
     }

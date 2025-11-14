@@ -2,6 +2,7 @@
 using Domain.Entity;
 using Domain.IRepository;
 using Infrastructure.Persistence.Configuration;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repository
@@ -63,26 +64,32 @@ namespace Infrastructure.Persistence.Repository
 
         public void AddStaffAssignment(PatientStaffAssignment assignment)
         {
-            var dbContext = context;
-            dbContext.PatientStaffAssignments.Add(assignment);
+            context.PatientStaffAssignments.Add(assignment);
         }
 
         public void RemoveStaffAssignment(PatientStaffAssignment assignment)
         {
-            var dbContext = context;
-            dbContext.PatientStaffAssignments.Remove(assignment);
+            context.PatientStaffAssignments.Remove(assignment);
         }
 
         public void AddBedAssignment(PatientBedAssignment assignment)
         {
-            var dbContext = context;
-            dbContext.PatientBedAssignments.Add(assignment);
+            context.PatientBedAssignments.Add(assignment);
         }
 
         public void RemoveBedAssignment(PatientBedAssignment assignment)
         {
-            var dbContext = context;
-            dbContext.PatientBedAssignments.Remove(assignment);
+            context.PatientBedAssignments.Remove(assignment);
+        }
+
+        public async Task<bool> IsControllerInUseAsync(string controllerKey)
+        {
+            if (string.IsNullOrWhiteSpace(controllerKey))
+                return false;
+
+            return await context.PatientBedAssignments
+                .AsNoTracking()
+                .AnyAsync(b => b.ControllerKey == controllerKey && b.ReleasedAt == null);
         }
         #endregion
     }

@@ -62,7 +62,7 @@ namespace API.Middleware
                     break;
 
                 // Conflict Exceptions - 409 Conflict
-                case BedOccupied or RoomOccupied:
+                case BedOccupied or RoomOccupied or BedInUse or IPAddressConflicting:
                     _logger.LogWarning(exception, "Conflict error: {ExceptionType}", exception.GetType().Name);
                     context.Response.StatusCode = StatusCodes.Status409Conflict;
                     response.Type = "Application Error";

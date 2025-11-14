@@ -15,5 +15,7 @@ namespace Domain.IRepository
         void RemoveStaffAssignment(PatientStaffAssignment assignment);
         void AddBedAssignment(PatientBedAssignment assignment);
         void RemoveBedAssignment(PatientBedAssignment assignment);
+
+        Task<bool> IsControllerInUseAsync(string controllerKey);
     }
 }

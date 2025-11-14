@@ -1,5 +1,4 @@
-﻿using Application.DTO;
-using Application.Interface.IService;
+﻿using Application.Interface.IService;
 using HCM.MessageBrokerDTOs;
 using MassTransit;
 using Microsoft.Extensions.Logging;
@@ -33,15 +32,7 @@ namespace Infrastructure.Messaging.Consumer
 
             try
             {
-                await deviceProfileService.SyncIamInfoAsync(new UpdateUserInfoDTO
-                {
-                    Dob = message.Dob,
-                    Email = message.Email ?? string.Empty,
-                    FullName = message.Name ?? string.Empty,
-                    Gender = message.Gender ?? string.Empty,
-                    IdentityNumber = message.IdentityNumber,
-                    Phone = message.Phone ?? string.Empty
-                });
+                await deviceProfileService.SyncIamInfoAsync(message);
             }
             catch (Exception ex)
             {

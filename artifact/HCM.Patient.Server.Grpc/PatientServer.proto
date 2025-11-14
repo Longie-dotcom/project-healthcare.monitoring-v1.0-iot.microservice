@@ -1,0 +1,20 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "HCM.Patient.Server.gRPC";
+
+import "google/protobuf/timestamp.proto";
+
+service PatientServer
+{
+    rpc IsControllerInUse (IsControllerInUseRequest) returns (IsControllerInUseResponse);
+}
+
+message IsControllerInUseRequest
+{
+    string controller_key = 1;
+}
+
+message IsControllerInUseResponse
+{
+    bool is_in_use = 1;
+}

@@ -11,19 +11,14 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class EdgeDeviceController : ControllerBase
     {
-        #region Attributes
         private readonly IEdgeDeviceService edgeDeviceService;
-        #endregion
-
-        #region Properties
-        #endregion
 
         public EdgeDeviceController(IEdgeDeviceService edgeDeviceService)
         {
             this.edgeDeviceService = edgeDeviceService;
         }
 
-        #region Methods
+        #region EdgeDevice Endpoints
         [AuthorizePrivilege("ViewDevice")]
         [HttpGet("{edgeDeviceId:guid}")]
         public async Task<ActionResult<EdgeDeviceDTO>> GetByIdAsync(Guid edgeDeviceId)
@@ -60,75 +55,63 @@ namespace API.Controllers
         }
 
         [AuthorizePrivilege("DeleteDevice")]
-        [HttpDelete("{edgeDeviceId:guid}")]
-        public async Task<IActionResult> DeleteAsync(
-            Guid edgeDeviceId, [FromBody] EdgeDeviceDeleteDTO dto)
+        [HttpPost("{edgeDeviceId:guid}/deactivate")]
+        public async Task<IActionResult> DeactivateAsync(Guid edgeDeviceId, [FromBody] EdgeDeviceDeactiveDTO dto)
         {
-            await edgeDeviceService.DeleteAsync(edgeDeviceId, dto);
-            return Ok(new { message = "Device deleted successfully" });
+            await edgeDeviceService.DeactiveAsync(edgeDeviceId, dto);
+            return Ok(new { message = "Edge device deactivated successfully" });
         }
+        #endregion
 
+        #region Controller Endpoints
         [AuthorizePrivilege("UpdateDevice")]
         [HttpPost("controller")]
-        public async Task<IActionResult> AssignControllerAsync(
-            [FromBody] ControllerCreateDTO dto)
+        public async Task<IActionResult> AssignControllerAsync([FromBody] ControllerCreateDTO dto)
         {
             await edgeDeviceService.AssignControllerAsync(dto);
             return Ok(new { message = "Controller assigned successfully" });
         }
 
         [AuthorizePrivilege("UpdateDevice")]
+        [HttpPut("controller")]
+        public async Task<ActionResult<ControllerDTO>> UpdateControllerAsync([FromBody] ControllerUpdateDTO dto)
+        {
+            var updatedController = await edgeDeviceService.UpdateControllerAsync(dto);
+            return Ok(updatedController);
+        }
+
+        [AuthorizePrivilege("UpdateDevice")]
+        [HttpDelete("controller")]
+        public async Task<IActionResult> UnassignControllerAsync([FromBody] ControllerUnassignDTO dto)
+        {
+            await edgeDeviceService.UnassignControllerAsync(dto);
+            return Ok(new { message = "Controller unassigned successfully" });
+        }
+        #endregion
+
+        #region Sensor Endpoints
+        [AuthorizePrivilege("UpdateDevice")]
         [HttpPost("sensor")]
-        public async Task<IActionResult> AssignSensorAsync(
-            [FromBody] SensorCreateDTO dto)
-        { 
+        public async Task<IActionResult> AssignSensorAsync([FromBody] SensorCreateDTO dto)
+        {
             await edgeDeviceService.AssignSensorAsync(dto);
             return Ok(new { message = "Sensor assigned successfully" });
         }
 
         [AuthorizePrivilege("UpdateDevice")]
-        [HttpDelete("controller")]
-        public async Task<IActionResult> UnassignControllerAsync(
-            [FromBody] ControllerDeleteDTO dto)
+        [HttpPut("sensor")]
+        public async Task<ActionResult<SensorDTO>> UpdateSensorAsync([FromBody] SensorUpdateDTO dto)
         {
-            await edgeDeviceService.UnassignControllerAsync(dto);
-            return Ok(new { message = "Controller unassigned successfully" });
+            var updatedSensor = await edgeDeviceService.UpdateSensorAsync(dto);
+            return Ok(updatedSensor);
         }
 
         [AuthorizePrivilege("UpdateDevice")]
         [HttpDelete("sensor")]
-        public async Task<IActionResult> UnassignSensorAsync(
-            [FromBody] SensorDeleteDTO dto)
+        public async Task<IActionResult> UnassignSensorAsync([FromBody] SensorUnassignDTO dto)
         {
             await edgeDeviceService.UnassignSensorAsync(dto);
             return Ok(new { message = "Sensor unassigned successfully" });
-        }
-
-        [AuthorizePrivilege("UpdateDevice")]
-        [HttpPost("reactivate/edge/{edgeKey}")]
-        public async Task<IActionResult> ReactivateEdgeAsync(
-            string edgeKey, [FromQuery] string performedBy)
-        {
-            await edgeDeviceService.ReactivateEdgeDeviceAsync(edgeKey, performedBy);
-            return Ok(new { message = "EdgeDevice reactivated successfully" });
-        }
-
-        [AuthorizePrivilege("UpdateDevice")]
-        [HttpPost("reactivate/controller/{controllerKey}")]
-        public async Task<IActionResult> ReactivateControllerAsync(
-            string controllerKey, [FromQuery] string performedBy)
-        {
-            await edgeDeviceService.ReactivateControllerAsync(controllerKey, performedBy);
-            return Ok(new { message = "Controller reactivated successfully" });
-        }
-
-        [AuthorizePrivilege("UpdateDevice")]
-        [HttpPost("reactivate/sensor/{sensorKey}")]
-        public async Task<IActionResult> ReactivateSensorAsync(
-            string sensorKey, [FromQuery] string performedBy)
-        {
-            await edgeDeviceService.ReactivateSensorAsync(sensorKey, performedBy);
-            return Ok(new { message = "Sensor reactivated successfully" });
         }
         #endregion
     }
