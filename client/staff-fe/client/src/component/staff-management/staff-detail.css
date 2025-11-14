@@ -1,0 +1,154 @@
+/* Root container */
+#staff-detail {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Overlay */
+#staff-detail > .modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+}
+
+/* Modal box */
+#staff-detail > .modal-content {
+  position: relative;
+  background: #fff;
+  color: #111;
+  border-radius: 16px;
+  width: 750px;
+  max-height: 90vh;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Hide scrollbars */
+#staff-detail > .modal-content::-webkit-scrollbar { display: none; }
+#staff-detail > .modal-content { -ms-overflow-style: none; scrollbar-width: none; }
+
+#staff-detail > .modal-content.animate-slide { animation: slideUp 0.35s ease; }
+
+/* Header */
+#staff-detail > .modal-content > .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eaeaea;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+#staff-detail > .modal-content > .modal-header > h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+#staff-detail > .modal-content > .modal-header > .close-btn {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+  color: #444;
+  transition: color 0.2s;
+}
+#staff-detail > .modal-content > .modal-header > .close-btn:hover {
+  color: #000;
+}
+
+/* Sections */
+#staff-detail > .modal-content > .modal-body > .section {
+  margin-bottom: 24px;
+}
+#staff-detail > .modal-content > .modal-body > .section > h3 {
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+  color: #222;
+  font-weight: 600;
+}
+
+/* Basic Info Grid */
+#staff-detail > .modal-content > .modal-body > .section > .info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 20px;
+  font-size: 0.95rem;
+}
+
+/* Record Cards */
+#staff-detail > .modal-content > .modal-body > .section > .record-card {
+  background: #f7f7f7;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid #e2e2e2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+#staff-detail > .modal-content > .modal-body > .section > .record-card:hover {
+  background: #fff;
+  transform: translateY(-2px);
+}
+#staff-detail > .modal-content > .modal-body > .section > .record-card > div > strong {
+  font-weight: 600;
+  color: #111;
+}
+
+/* No records */
+#staff-detail > .modal-content > .modal-body > .section > .no-records {
+  color: #777;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* Modal Actions */
+#staff-detail > .modal-content > .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid #eaeaea;
+  padding-top: 12px;
+  margin-top: 16px;
+}
+#staff-detail > .modal-content > .modal-actions > .btn-close {
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 20px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+#staff-detail > .modal-content > .modal-actions > .btn-close:hover {
+  background: #333;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  #staff-detail > .modal-content {
+    width: 90%;
+    padding: 18px;
+  }
+  #staff-detail > .modal-content > .modal-body > .section > .info-grid,
+  #staff-detail > .modal-content > .modal-body > .section > .record-card {
+    grid-template-columns: 1fr;
+  }
+}

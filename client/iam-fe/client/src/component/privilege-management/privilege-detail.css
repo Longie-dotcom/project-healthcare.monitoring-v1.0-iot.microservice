@@ -1,0 +1,132 @@
+#privilege-detail {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* Overlay background */
+#privilege-detail > .modal-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+}
+
+/* Modal content */
+#privilege-detail > .modal-content {
+  position: relative;
+  background: #ffffff;
+  color: #222;
+  border-radius: 14px;
+  width: 420px;
+  max-width: 90%;
+  padding: 28px 36px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  animation: fadeInScale 0.25s ease-in-out;
+  z-index: 2100;
+}
+
+/* Slide animation */
+.animate-slide {
+  animation: slideUp 0.35s ease;
+}
+
+/* Header */
+#privilege-detail > .modal-content > .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e5e5e5;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+#privilege-detail > .modal-content > .modal-header > h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #045c97;
+}
+
+#privilege-detail > .modal-content > .modal-header > .close-btn {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+  color: #444;
+  transition: color 0.2s;
+}
+#privilege-detail > .modal-content > .modal-header > .close-btn:hover {
+  color: #000;
+}
+
+/* Body */
+#privilege-detail > .modal-content > .modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+#privilege-detail > .modal-content > .modal-body > div {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+#privilege-detail > .modal-content > .modal-body strong {
+  color: #045c97;
+  font-weight: 600;
+}
+
+/* Footer actions */
+#privilege-detail > .modal-content > .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid #e5e5e5;
+  padding-top: 12px;
+  margin-top: 18px;
+}
+
+#privilege-detail > .modal-content > .modal-actions > .btn-close {
+  background-color: #045c97;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+#privilege-detail > .modal-content > .modal-actions > .btn-close:hover {
+  background-color: #034a7b;
+  transform: scale(1.03);
+}
+
+/* Animations */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

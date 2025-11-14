@@ -1,0 +1,44 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "HCM.DeviceManagement.Server.gRPC";
+
+import "google/protobuf/timestamp.proto";
+
+service DeviceManagementServer
+{
+    rpc GetControllerMeta (GetControllerMetaRequest) returns (GetControllerMetaResponse);
+}
+
+message GetControllerMetaRequest
+{
+    string controller_key = 1;
+}
+
+message GetControllerMetaResponse
+{
+    // Controller info
+    string controller_key = 1;       // Controllers.ControllerKey
+    string bed_number = 2;           // Controllers.BedNumber
+    string firmware_version = 3;     // Controllers.FirmwareVersion
+    bool is_active = 4;              // Controllers.IsActive
+    string status = 5;               // Controllers.Status
+
+    // Edge device info
+    string edge_key = 6;             // Controllers.EdgeKey
+    string room_name = 7;            // EdgeDevices.RoomName
+    string ip_address = 8;           // EdgeDevices.IpAddress
+    string description = 9;           // EdgeDevices.Description
+
+    // Sensors attached to this controller
+    repeated SensorMeta sensors = 10;
+}
+
+// Sensor info
+message SensorMeta
+{
+    string sensor_key = 1;           // Sensors.SensorKey
+    string type = 2;                 // Sensors.Type
+    string unit = 3;                 // Sensors.Unit
+    string description = 4;          // Sensors.Description
+    bool is_active = 5;              // Sensors.IsActive
+}

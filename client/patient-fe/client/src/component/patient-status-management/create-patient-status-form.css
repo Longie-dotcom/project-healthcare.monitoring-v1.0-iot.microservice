@@ -1,0 +1,108 @@
+/* Overlay for modal */
+#create-patient-status-form > .modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+/* Modal box */
+#create-patient-status-form > .modal-overlay > .modal-content {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 700px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Modal title */
+#create-patient-status-form > .modal-overlay > .modal-content h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Form layout */
+#create-patient-status-form > .modal-overlay > .modal-content form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* Each input group */
+#create-patient-status-form > .modal-overlay > .modal-content form .form-group {
+  display: flex;
+  flex-direction: column;
+  margin: 5%;
+}
+
+#create-patient-status-form > .modal-overlay > .modal-content form label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+#create-patient-status-form > .modal-overlay > .modal-content form input,
+#create-patient-status-form > .modal-overlay > .modal-content form textarea {
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  background-color: #dcdcdc;
+  font-size: 14px;
+  resize: none;
+}
+
+/* Modal action buttons */
+#create-patient-status-form > .modal-overlay > .modal-content form .modal-actions {
+  grid-column: span 2;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+#create-patient-status-form > .modal-overlay > .modal-content form .btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+#create-patient-status-form > .modal-overlay > .modal-content form .btn.create {
+  background-color: #3498db;
+  color: white;
+}
+
+#create-patient-status-form > .modal-overlay > .modal-content form .btn.create:hover {
+  background-color: #2980b9;
+}
+
+#create-patient-status-form > .modal-overlay > .modal-content form .btn.cancel {
+  background-color: #e74c3c;
+  color: white;
+}
+
+#create-patient-status-form > .modal-overlay > .modal-content form .btn.cancel:hover {
+  background-color: #c0392b;
+}
+
+/* Responsive: collapse to 1 column on small screens */
+@media (max-width: 768px) {
+  #create-patient-status-form > .modal-overlay > .modal-content form {
+    grid-template-columns: 1fr;
+  }
+
+  #create-patient-status-form > .modal-overlay > .modal-content form .modal-actions {
+    justify-content: center;
+  }
+}

@@ -1,0 +1,67 @@
+/* Root dashboard container */
+#dashboard {
+    display: flex;
+    background: linear-gradient(135deg, #e5dada, #c7caff);
+    height: 100vh;
+}
+
+/* Sidebar */
+#dashboard>.dashboard-sidebar {
+    width: 220px;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    margin: 2%;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#dashboard>.dashboard-sidebar>.sidebar-logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+#dashboard>.dashboard-sidebar>.sidebar-tabs {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#dashboard>.dashboard-sidebar>.sidebar-tabs>li {
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#dashboard>.dashboard-sidebar>.sidebar-tabs>li:hover {
+    background-color: #a09acc;
+}
+
+#dashboard>.dashboard-sidebar>.sidebar-tabs>li.active {
+    background-color: #d3cdff;
+    font-weight: bold;
+}
+
+/* Main content */
+#dashboard>.dashboard-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin: 2%;
+}
+
+/* Top header */
+#dashboard>.dashboard-main>.dashboard-header {
+    height: 60px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+}
+
+/* Content area */
+#dashboard>.dashboard-main>.dashboard-content {
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+}

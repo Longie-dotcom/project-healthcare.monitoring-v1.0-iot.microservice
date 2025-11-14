@@ -1,0 +1,131 @@
+#create-privilege-form {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* Overlay background */
+#create-privilege-form > .modal-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
+}
+
+/* Modal content */
+#create-privilege-form > .modal-content {
+  position: relative;
+  background: #ffffff;
+  color: #222;
+  border-radius: 14px;
+  width: 440px;
+  max-width: 90%;
+  padding: 32px 38px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  z-index: 2100;
+  animation: fadeInScale 0.25s ease-in-out;
+}
+
+/* Header */
+#create-privilege-form > .modal-content > h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #045c97;
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+/* Form styling */
+#create-privilege-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+#create-privilege-form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+#create-privilege-form label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+#create-privilege-form input,
+#create-privilege-form textarea {
+  border: 1px solid #d2d2d2;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+#create-privilege-form input:focus,
+#create-privilege-form textarea:focus {
+  border-color: #045c97;
+  box-shadow: 0 0 0 3px rgba(4, 92, 151, 0.15);
+}
+
+#create-privilege-form textarea {
+  resize: none;
+  min-height: 80px;
+}
+
+/* Actions */
+#create-privilege-form .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+  border-top: 1px solid #e5e5e5;
+  padding-top: 12px;
+}
+
+#create-privilege-form .btn {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Primary button */
+#create-privilege-form .btn.create {
+  background-color: #045c97;
+  color: #fff;
+}
+
+#create-privilege-form .btn.create:hover {
+  background-color: #034a7b;
+  transform: scale(1.03);
+}
+
+/* Cancel button */
+#create-privilege-form .btn.cancel {
+  background-color: #ddd;
+  color: #333;
+}
+
+#create-privilege-form .btn.cancel:hover {
+  background-color: #c6c6c6;
+}
+
+/* Animation */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

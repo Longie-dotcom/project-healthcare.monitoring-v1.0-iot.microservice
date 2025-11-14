@@ -1,0 +1,116 @@
+/* Container */
+#update-privilege-form {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* Overlay (dark transparent background) */
+#update-privilege-form > .modal-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Modal content box */
+#update-privilege-form > .modal-content {
+  position: relative;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 30px 40px;
+  width: 400px;
+  max-width: 90%;
+  z-index: 2100;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  animation: fadeInScale 0.25s ease-in-out;
+}
+
+/* Heading */
+#update-privilege-form > .modal-content > h2 {
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 1.4rem;
+  color: #045c97;
+}
+
+/* Form group layout */
+#update-privilege-form > .modal-content > form > .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+#update-privilege-form > .modal-content > form > .form-group > label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #333;
+}
+
+#update-privilege-form > .modal-content > form > .form-group > input,
+#update-privilege-form > .modal-content > form > .form-group > textarea {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  resize: none;
+  outline: none;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+#update-privilege-form > .modal-content > form > .form-group > input:focus,
+#update-privilege-form > .modal-content > form > .form-group > textarea:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+}
+
+/* Action buttons */
+#update-privilege-form > .modal-content > form > .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+#update-privilege-form > .modal-content > form > .modal-actions > .btn {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  color: #fff;
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+#update-privilege-form > .modal-content > form > .modal-actions > .btn.update {
+  background-color: #3498db;
+}
+
+#update-privilege-form > .modal-content > form > .modal-actions > .btn.update:hover {
+  background-color: #217dbb;
+  transform: scale(1.02);
+}
+
+#update-privilege-form > .modal-content > form > .modal-actions > .btn.cancel {
+  background-color: #888;
+}
+
+#update-privilege-form > .modal-content > form > .modal-actions > .btn.cancel:hover {
+  background-color: #666;
+  transform: scale(1.02);
+}
+
+/* Animation */
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

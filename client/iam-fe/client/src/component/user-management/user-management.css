@@ -1,0 +1,222 @@
+#user-management {
+  padding: 20px;
+}
+
+#user-management>.header {
+  display: flex;
+  margin: 1%;
+  justify-content: space-between;
+}
+
+#user-management>.header>div {
+  font-size: 1.4vw;
+  font-weight: 600;
+}
+
+#user-management>.header>.filter {
+  display: flex;
+  flex-direction: row;
+  width: 50%;
+}
+
+#user-management>.header>.filter>.date-range-inputs {
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+}
+
+#user-management>.header>.filter>select,
+#user-management>.header>.filter>input,
+#user-management>.header>.filter>button,
+#user-management>.header>.filter>.date-range-inputs>input {
+  padding: 1%;
+  border: none;
+  font-size: 1vw;
+  cursor: pointer;
+  border-radius: 8px;
+  margin-right: 2%;
+}
+
+#user-management>.header>.filter>.date-range-inputs>input {
+  padding: 1.4%;
+  margin-right: 5%;
+  margin-top: 1%;
+  margin-bottom: 1%;
+}
+
+#user-management>.header>.filter>button {
+  padding-left: 2%;
+  padding-right: 2%;
+  transition: all 0.1s ease-in-out;
+}
+
+#user-management>.header>.filter>button:hover {
+  background-color: #3498db;
+}
+
+#user-management>.header>button {
+  padding: 1%;
+  border: none;
+  font-size: 1vw;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.1s ease-in-out;
+}
+
+#user-management>.header>button:hover {
+  background-color: #3498db;
+}
+
+#user-management>.filtering-list {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 1%;
+}
+
+#user-management>.filtering-list>.filter-tag {
+  background-color: #045c97;
+  color: rgb(255, 255, 255);
+  padding: 0.5%;
+  margin: 0.6%;
+  font-size: 0.9vw;
+  flex-wrap: wrap;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+}
+
+#user-management>.filtering-list>.filter-tag:hover {
+  background-color: rgb(255, 255, 255);
+  color: #045c97;
+}
+
+#user-management>.empty-list {
+  font-size: 3vw;
+  text-align: center;
+  margin-top: 10vh;
+  font-weight: 700;
+  color: #9cafbc;
+}
+
+/* Container for the list */
+#user-management>.user-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#user-management>.paging {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+#user-management>.paging>.page-btn {
+  background: rgba(255, 255, 255, 0.50);
+  color: rgb(0, 0, 0);
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  backdrop-filter: blur(6px);
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+#user-management>.paging>.page-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+#user-management>.paging>.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+#user-management>.paging>.page-info {
+  color: rgb(0, 0, 0);
+  backdrop-filter: blur(4px);
+}
+
+
+/* Header row */
+.user-list-header {
+  display: grid;
+  grid-template-columns: 2fr 3fr 2fr 1fr 3fr;
+  font-weight: bold;
+  padding: 12px 16px;
+  background-color: #f0f4f8;
+  border-radius: 10px;
+}
+
+/* Each user card (row) */
+.user-inactive {
+  background-color: #d1d5db;
+  color: #6b7280;
+  opacity: 0.6;
+  filter: grayscale(80%);
+}
+
+.user-active {
+  background-color: #f0f4f8;
+  color: #111827;
+  opacity: 1;
+  filter: none;
+}
+
+.user-card {
+  display: grid;
+  grid-template-columns: 2fr 3fr 2fr 1fr 3fr;
+  backdrop-filter: blur(8px);
+  border-radius: 10px;
+  padding: 12px 16px;
+  align-items: center;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.user-card:hover {
+  background-color: rgb(217, 217, 217);
+}
+
+/* Actions buttons */
+.user-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.user-actions>.btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  color: white;
+  transition: 0.2s;
+  width: 30%;
+}
+
+.user-actions>.btn.delete {
+  background-color: #3498db;
+}
+
+.user-actions>.btn.delete:hover {
+  background-color: #912014;
+}
+
+.user-actions>.btn.update {
+  background-color: #3498db;
+}
+
+.user-actions>.btn.update:hover {
+  background-color: #c78111;
+}
+
+.user-actions>.btn.detail {
+  background-color: #3498db;
+}
+
+.user-actions>.btn.detail:hover {
+  background-color: #073a5c;
+}

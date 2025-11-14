@@ -1,0 +1,143 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/Users/{everything}",
+      "UpstreamPathTemplate": "/hcm/iam/user/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      },
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "hcm-iamms",
+          "Port": 6000
+        }
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Roles/{everything}",
+      "UpstreamPathTemplate": "/hcm/iam/role/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      },
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "hcm-iamms",
+          "Port": 6000
+        }
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Privileges/{everything}",
+      "UpstreamPathTemplate": "/hcm/iam/privilege/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      },
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "hcm-iamms",
+          "Port": 6000
+        }
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Auth/{everything}",
+      "UpstreamPathTemplate": "/hcm/iam/auth/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": ""
+      },
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "hcm-iamms",
+          "Port": 6000
+        }
+      ]
+    },
+
+    {
+      "DownstreamPathTemplate": "/api/Staffs/{everything}",
+      "UpstreamPathTemplate": "/hcm/staff/staff/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      },
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "hcm-staffms",
+          "Port": 6100
+        }
+      ]
+    },
+
+    {
+      "DownstreamPathTemplate": "/api/Patients/{everything}",
+      "UpstreamPathTemplate": "/hcm/patient/patient/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      },
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "hcm-patientms",
+          "Port": 6200
+        }
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/PatientStatuses/{everything}",
+      "UpstreamPathTemplate": "/hcm/patient/patient-status/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      },
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "hcm-patientms",
+          "Port": 6200
+        }
+      ]
+    },
+
+    {
+      "DownstreamPathTemplate": "/api/EdgeDevice/{everything}",
+      "UpstreamPathTemplate": "/hcm/device-management/edge-device/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      },
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "hcm-devicemanagementms",
+          "Port": 6300
+        }
+      ]
+    },
+
+    {
+      "DownstreamPathTemplate": "/api/DeviceProfiles/{everything}",
+      "UpstreamPathTemplate": "/hcm/data-collection/device-profile/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      },
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "hcm-datacollectionms",
+          "Port": 6400
+        }
+      ]
+    }
+  ]
+}

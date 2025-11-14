@@ -1,0 +1,27 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "HCM.IAM.Server.gRPC";
+
+import "google/protobuf/timestamp.proto";
+
+service IAMServer
+{
+    rpc GetIAMUser (GetIAMUserRequest) returns (GetIAMUserResponse);
+}
+
+message GetIAMUserRequest
+{
+  string identity_number = 1;
+}
+
+message GetIAMUserResponse
+{
+  string full_name = 1;
+  string address = 2;
+  string gender = 3;
+  string identity_number = 4;
+  bool is_active = 5;
+  google.protobuf.Timestamp dob = 6;
+  string email = 7;
+  string phone = 8;
+}

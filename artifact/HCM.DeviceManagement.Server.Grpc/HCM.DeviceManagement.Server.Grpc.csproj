@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<Authors>Longie</Authors>
+		<PackageId>HCM.DeviceManagement.Server.Grpc</PackageId>
+		<Version>1.0.1</Version>
+		<Description>Contract between DeviceManagement and other services.</Description>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="DeviceManagementServer.proto" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Google.Protobuf" Version="3.33.0" />
+		<PackageReference Include="Grpc.Core" Version="2.46.6" />
+		<PackageReference Include="Grpc.Net.Client" Version="2.71.0" />
+		<PackageReference Include="Grpc.Tools" Version="2.76.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Protobuf Include="DeviceManagementServer.proto">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Protobuf>
+	</ItemGroup>
+
+</Project>

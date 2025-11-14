@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+	<Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="GrpcClient\Client\**" />
+    <Compile Remove="GrpcClient\Mapper\**" />
+    <Compile Remove="GrpcClient\Service\**" />
+    <EmbeddedResource Remove="GrpcClient\Client\**" />
+    <EmbeddedResource Remove="GrpcClient\Mapper\**" />
+    <EmbeddedResource Remove="GrpcClient\Service\**" />
+    <None Remove="GrpcClient\Client\**" />
+    <None Remove="GrpcClient\Mapper\**" />
+    <None Remove="GrpcClient\Service\**" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <PackageReference Include="DotNetEnv" Version="3.1.1" />
+	<PackageReference Include="Google.Apis" Version="1.72.0" />
+    <PackageReference Include="Google.Apis.Gmail.v1" Version="1.70.0.3833" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.71.0" />
+    <PackageReference Include="MassTransit" Version="8.5.4" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.4" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.9" />
+    <PackageReference Include="MimeKit" Version="4.14.0" />
+    <PackageReference Include="MongoDB.Driver" Version="3.5.0" />
+    <PackageReference Include="RabbitMQ" Version="3.6.2" />
+    <PackageReference Include="RabbitMQ.Client" Version="7.1.2" />
+    <PackageReference Include="SignalREnvelope" Version="1.0.3" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <ProjectReference Include="..\Application\Application.csproj" />
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+  </ItemGroup>
+
+</Project>

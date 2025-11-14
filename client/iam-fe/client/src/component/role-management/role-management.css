@@ -1,0 +1,126 @@
+#role-management {
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Header */
+#role-management > .header {
+  display: flex;
+  justify-content: space-between;
+  margin: 1%;
+}
+
+#role-management > .header > div {
+  font-size: 1.4vw;
+  font-weight: 600;
+}
+
+#role-management > .header > .function {
+  width: 20%;
+  display: flex;
+  justify-content: right;
+}
+
+#role-management > .header > .function > button {
+  padding: 5%;
+  margin: 2%;
+  border: none;
+  font-size: 1vw;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.1s ease-in-out;
+}
+
+#role-management > .header > .function > button:hover {
+  background-color: #3498db;
+  color: white;
+}
+
+/* Container list */
+.role-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-height: 400px; /* adjust as needed */
+  overflow-y: auto;
+  padding-right: 8px; /* prevents content from being covered by scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* Chrome, Edge, and Safari */
+.role-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.role-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+}
+
+.role-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.role-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.45);
+}
+
+/* Header row */
+.role-list-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 4fr 2fr;
+  font-weight: bold;
+  padding: 12px 16px;
+  background-color: #f0f4f8;
+  border-radius: 10px;
+}
+
+/* Role row */
+.role-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr 4fr 2fr;
+  background-color: #f0f4f8;
+  backdrop-filter: blur(8px);
+  border-radius: 10px;
+  padding: 12px 16px;
+  align-items: center;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.role-card:hover {
+  background-color: rgb(217, 217, 217);
+}
+
+/* Action buttons */
+.role-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.role-actions > .btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  color: white;
+  transition: 0.2s;
+  width: 30%;
+  min-width: 80px;
+  text-align: center;
+}
+
+.role-actions > .btn.delete { background-color: #3498db; }
+.role-actions > .btn.delete:hover { background-color: #912014; }
+
+.role-actions > .btn.update { background-color: #3498db; }
+.role-actions > .btn.update:hover { background-color: #c78111; }
+
+.role-actions > .btn.detail { background-color: #3498db; }
+.role-actions > .btn.detail:hover { background-color: #073a5c; }

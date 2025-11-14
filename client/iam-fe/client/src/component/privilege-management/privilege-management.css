@@ -1,0 +1,124 @@
+#privilege-management {
+  padding: 20px;
+}
+
+/* ===== Header Section ===== */
+#privilege-management > .header {
+  display: flex;
+  margin: 1%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#privilege-management > .header > div {
+  font-size: 1.4vw;
+  font-weight: 600;
+}
+
+#privilege-management > .header > button {
+  padding: 1%;
+  border: none;
+  font-size: 1vw;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.1s ease-in-out;
+  background-color: #045c97;
+  color: white;
+}
+
+#privilege-management > .header > button:hover {
+  background-color: #3498db;
+}
+
+/* ===== Privilege List ===== */
+#privilege-management > .privilege-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 1%;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: none;
+}
+
+#privilege-management > .privilege-list::-webkit-scrollbar {
+  display: none;
+}
+
+#privilege-management > .privilege-list > .privilege-list-header {
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr;
+  font-weight: bold;
+  padding: 12px 16px;
+  background-color: #f0f4f8;
+  border-radius: 10px;
+}
+
+/* Each privilege card */
+#privilege-management > .privilege-list > .privilege-card {
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr;
+  background-color: #f0f4f8;
+  backdrop-filter: blur(8px);
+  border-radius: 10px;
+  padding: 12px 16px;
+  align-items: center;
+  transition: background-color 0.2s ease-in-out;
+}
+
+#privilege-management > .privilege-list > .privilege-card:hover {
+  background-color: rgb(217, 217, 217);
+}
+
+/* ===== Actions ===== */
+#privilege-management > .privilege-list > .privilege-card > .privilege-actions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+#privilege-management > .privilege-list > .privilege-card > .privilege-actions > .btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9vw;
+  color: white;
+  transition: 0.2s ease;
+  width: 30%;
+}
+
+/* Button styles */
+#privilege-management > .privilege-list > .privilege-card > .privilege-actions > .btn.delete {
+  background-color: #045c97;
+}
+
+#privilege-management > .privilege-list > .privilege-card > .privilege-actions > .btn.delete:hover {
+  background-color: #912014;
+}
+
+#privilege-management > .privilege-list > .privilege-card > .privilege-actions > .btn.update {
+  background-color: #045c97;
+}
+
+#privilege-management > .privilege-list > .privilege-card > .privilege-actions > .btn.update:hover {
+  background-color: #c78111;
+}
+
+#privilege-management > .privilege-list > .privilege-card > .privilege-actions > .btn.detail {
+  background-color: #045c97;
+}
+
+#privilege-management > .privilege-list > .privilege-card > .privilege-actions > .btn.detail:hover {
+  background-color: #073a5c;
+}
+
+/* ===== Empty list ===== */
+#privilege-management > .empty-list {
+  font-size: 3vw;
+  text-align: center;
+  margin-top: 10vh;
+  font-weight: 700;
+  color: #9cafbc;
+}

@@ -1,0 +1,311 @@
+/* ================================
+   Root modal wrapper
+================================ */
+#update-user-form {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+
+/* ================================
+   Overlay
+================================ */
+#update-user-form>.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
+}
+
+/* ================================
+   Modal container
+================================ */
+#update-user-form>.modal-content {
+  position: relative;
+  margin: 5vh auto;
+  width: 80%;
+  max-width: 800px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease;
+  z-index: 1001;
+  max-height: 80vh;
+  /* prevent modal from exceeding viewport */
+  overflow-y: auto;
+  /* enable scrolling */
+  scrollbar-width: none;
+  /* hide scrollbar in Firefox */
+}
+
+#update-user-form>.modal-content::-webkit-scrollbar {
+  display: none;
+}
+
+#update-user-form>.modal-content.animate-slide {
+  animation: slideUp 0.35s ease-out;
+}
+
+/* ================================
+   Headings
+================================ */
+#update-user-form>.modal-content>h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+/* ================================
+   Form sections
+================================ */
+#update-user-form>.modal-content>form>.form-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+#update-user-form>.modal-content>form>.form-sections>.privilege>.bottom,
+#update-user-form>.modal-content>form>.form-sections>.role>.bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+#update-user-form>.modal-content>form>.form-sections>.section {
+  border: dashed 2.4px black;
+  border-radius: 10px;
+  padding: 5%;
+}
+
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.section-col>.scroll {
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.section-col>.scroll::-webkit-scrollbar {
+  display: none;
+}
+
+#update-user-form>.modal-content>form>.form-sections>h3 {
+  color: #444;
+  margin-bottom: 0.8rem;
+  padding-left: 0.5rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* ================================
+   Info grid (basic info inputs)
+================================ */
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 1.5rem;
+}
+
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.info-grid>.info-grid-col {
+  display: flex;
+  flex-direction: column;
+}
+
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.info-grid>.info-grid-col>.info-grid-group {
+  margin: 2%;
+  display: flex;
+  flex-direction: column;
+}
+
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.info-grid>.info-grid-col>.info-grid-group>label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.info-grid>.info-grid-col>.info-grid-group>input,
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.info-grid>.info-grid-col>.info-grid-group>select {
+  width: auto;
+  padding: 4%;
+  border-radius: 6px;
+  border: none;
+  background-color: #dcdcdc;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.2s;
+}
+
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.info-grid>input:focus,
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.info-grid>select:focus {
+  border-color: #007bff;
+}
+
+/* ================================
+   Checkbox list (roles + privileges)
+================================ */
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.empty {
+  font-weight: 600;
+  font-size: 1vw;
+}
+
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.section-col>.checkbox-grid {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 0;
+}
+
+#update-user-form .checkbox-item.active {
+  background: #e0edff;
+  border-radius: 0.4rem;
+  padding: 0.3rem 0.5rem;
+}
+
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.section-col>.checkbox-grid>.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  margin: 2%;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.section-col>.checkbox-grid>.checkbox-item:hover {
+  background-color: #f0f8ff;
+}
+
+/* ================================
+  User list (roles + privileges)
+================================ */
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.section-col>.user-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 0;
+}
+
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.section-col>.user-list>.user-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  justify-content: space-between;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  margin: 2%;
+  transition: background 0.2s;
+}
+
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.section-col>.user-list>.user-item>.actions {
+  width: 20%;
+  flex-direction: column;
+  justify-items: center;
+}
+
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.section-col>.user-list>.user-item>.actions>.btn-mini {
+  border: none;
+  padding: 8%;
+  width: auto;
+  margin: 4%;
+  cursor: pointer;
+  font-weight: 600;
+  border-radius: 5px;
+  transition: all 0.1s ease-in-out;
+}
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.section-col>.user-list>.user-item>.actions>.inactive,
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.section-col>.user-list>.user-item>.actions>.revoked {
+  background-color: red;
+}
+
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.section-col>.user-list>.user-item>.actions>.active,
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.section-col>.user-list>.user-item>.actions>.granted {
+  background-color: rgb(136, 255, 136);
+}
+
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.section-col>.user-list>.user-item>.actions>.btn-mini:hover {
+  background-color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
+}
+
+#update-user-form>.modal-content>form>.form-sections>.section>.bottom>.section-col>.user-list>.user-item:hover {
+  background-color: #f0f8ff;
+}
+
+/* ================================
+   Modal actions
+================================ */
+#update-user-form>.modal-content>form>.form-sections>.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+#update-user-form>.modal-content>form>.form-sections>.modal-actions>.btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s;
+}
+
+#update-user-form>.modal-content>form>.form-sections>.modal-actions>.btn.update {
+  background-color: #007bff;
+  color: #fff;
+}
+
+#update-user-form>.modal-content>form>.form-sections>.modal-actions>.btn.update:hover {
+  background-color: #0066d1;
+}
+
+#update-user-form>.modal-content>form>.form-sections>.modal-actions>.btn.cancel {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+#update-user-form>.modal-content>form>.form-sections>.modal-actions>.btn.cancel:hover {
+  background-color: #e0e0e0;
+}
+
+/* ================================
+   Animations
+================================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================================
+   Responsive
+================================ */
+@media (max-width: 768px) {
+  #update-user-form>.modal-content {
+    width: 95%;
+    padding: 1.2rem;
+  }
+
+  #update-user-form>.modal-content>form>.form-sections>.section>.info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #update-user-form>.modal-content>form>.form-sections>.modal-actions {
+    justify-content: center;
+  }
+}

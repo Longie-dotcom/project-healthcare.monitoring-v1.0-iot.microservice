@@ -1,0 +1,33 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  overflow: hidden;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+}
+
+@font-face {
+  font-family: 'CustomFont';
+  src: url('../src/assets/Be_Vietnam_Pro/BeVietnamPro-Medium.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+html, body, div, span, h1, h2, h3, h4, h5, h6, p, label, input, textarea, select, button, a, ul, li {
+  font-family: 'CustomFont', sans-serif;
+}

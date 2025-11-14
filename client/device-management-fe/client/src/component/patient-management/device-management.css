@@ -1,0 +1,203 @@
+#device-management {
+  padding: 20px;
+}
+
+/* Header */
+#device-management > .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+#device-management > .header > div {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+#device-management > .header > .filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#device-management > .header > .filter > input,
+#device-management > .header > .filter > button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#device-management > .header > .filter > button:hover {
+  background-color: #3498db;
+  color: white;
+}
+
+#device-management > .header > button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+#device-management > .header > button:hover {
+  background-color: #3498db;
+  color: rgb(255, 255, 255);
+}
+
+/* Empty list */
+#device-management > .empty-list {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-top: 10vh;
+  font-weight: 600;
+  color: #9cafbc;
+}
+
+#device-management > .main {
+  display: flex;
+  flex-direction: row;
+}
+
+#device-management > .main > .page {
+  width: 100%;
+}
+
+#device-management > .main > .less {
+  width: auto;
+}
+
+/* Device list */
+#device-management > .main > .page > .device-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 10px;
+}
+
+#device-management > .main > .page > .less {
+  width: auto;
+}
+
+/* Header row */
+#device-management > .main > .page > .device-list > .device-list-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 3fr 2fr;
+  font-weight: bold;
+  padding: 12px 16px;
+  background-color: #f0f4f8;
+  border-radius: 8px;
+}
+
+/* Device row */
+#device-management > .main > .page > .device-list > .device-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr 3fr 2fr;
+  background-color: #f7f7f7;
+  padding: 12px 16px;
+  border-radius: 8px;
+  align-items: center;
+  transition: background-color 0.2s ease-in-out;
+}
+
+#device-management > .main > .page > .device-list > .less {
+  grid-template-columns: 3.5fr 2fr;
+}
+
+#device-management > .main > .page > .device-list > .gray-out {
+  background-color: #e0e0e0;
+  color: #888;
+  opacity: 0.6;
+  pointer-events: none;
+  filter: grayscale(100%);
+  transition: all 0.3s ease-in-out;
+}
+
+#device-management > .main > .page > .device-list > .gray-out > .device-actions > .non-gray-out {
+  pointer-events: auto; 
+}
+
+#device-management > .main > .page > .device-list > .device-card:hover {
+  background-color: #e2e2e2;
+}
+
+/* Action buttons */
+#device-management > .main > .page > .device-list > .device-card > .device-actions {
+  display: flex;
+  gap: 6px;
+}
+
+#device-management > .main > .page > .device-list > .device-card > .device-actions > .btn {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #fff;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+#device-management > .main > .page > .device-list > .device-card > .device-actions > .btn.delete {
+  background-color: #e74c3c;
+}
+#device-management > .main > .page > .device-list > .device-card > .device-actions > .btn.delete:hover {
+  background-color: #c0392b;
+}
+
+#device-management > .main > .page > .device-list > .device-card > .device-actions > .btn.update {
+  background-color: #f39c12;
+}
+#device-management > .main > .page > .device-list > .device-card > .device-actions > .btn.update:hover {
+  background-color: #d68910;
+}
+
+#device-management > .main > .page > .device-list > .device-card > .device-actions > .btn.detail {
+  background-color: #3498db;
+}
+#device-management > .main > .page > .device-list > .device-card > .device-actions > .btn.detail:hover {
+  background-color: #073a5c;
+}
+
+/* Pagination */
+#device-management > .main > .page > .paging {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+#device-management > .main > .page > .paging > .page-btn {
+  background: rgba(255, 255, 255, 0.50);
+  color: rgb(0, 0, 0);
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  backdrop-filter: blur(6px);
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+#device-management > .main > .page > .paging > .page-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+#device-management > .main > .page > .paging > .page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+#device-management > .main > .page > .paging > .page-info {
+  color: rgb(0, 0, 0);
+  backdrop-filter: blur(4px);
+}

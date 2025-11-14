@@ -1,0 +1,185 @@
+#patient-status-management {
+  padding: 20px;
+}
+
+/* Header */
+#patient-status-management > .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+#patient-status-management > .header > div {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+#patient-status-management > .header > .filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#patient-status-management > .header > .filter > input,
+#patient-status-management > .header > .filter > button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#patient-status-management > .header > .filter > button:hover {
+  background-color: #3498db;
+  color: white;
+}
+
+#patient-status-management > .header > button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background-color: #ffffff;
+  color: black;
+  padding: 1%;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+#patient-status-management > .header > button:hover {
+  background-color: #3498db;
+  color: rgb(255, 255, 255);
+}
+
+/* Filter tags */
+#patient-status-management > .filtering-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+#patient-status-management > .filtering-list > .filter-tag {
+  background-color: #045c97;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+#patient-status-management > .filtering-list > .filter-tag:hover {
+  background-color: #fff;
+  color: #045c97;
+}
+
+/* Empty list */
+#patient-status-management > .empty-list {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-top: 10vh;
+  font-weight: 600;
+  color: #9cafbc;
+}
+
+/* List */
+#patient-status-management > .status-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Header row */
+#patient-status-management > .status-list > .status-list-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr 1fr;
+  font-weight: bold;
+  padding: 12px 16px;
+  background-color: #f0f4f8;
+  border-radius: 8px;
+}
+
+/* Row */
+#patient-status-management > .status-list > .status-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr 1fr;
+  background-color: #f7f7f7;
+  padding: 12px 16px;
+  border-radius: 8px;
+  align-items: center;
+  transition: background-color 0.2s ease-in-out;
+}
+
+#patient-status-management > .status-list > .status-card:hover {
+  background-color: #e2e2e2;
+}
+
+/* Action buttons */
+#patient-status-management > .status-list > .status-card > .status-actions {
+  display: flex;
+  gap: 6px;
+}
+
+#patient-status-management > .status-list > .status-card > .status-actions > .btn {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #fff;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+#patient-status-management > .status-list > .status-card > .status-actions > .btn.delete {
+  background-color: #3498db;
+}
+#patient-status-management > .status-list > .status-card > .status-actions > .btn.delete:hover {
+  background-color: #c0392b;
+}
+
+#patient-status-management > .status-list > .status-card > .status-actions > .btn.update {
+  background-color: #3498db;
+}
+#patient-status-management > .status-list > .status-card > .status-actions > .btn.update:hover {
+  background-color: #d68910;
+}
+
+/* Pagination */
+#patient-status-management > .paging {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+#patient-status-management > .paging > .page-btn {
+  background: rgba(255, 255, 255, 0.5);
+  color: rgb(0, 0, 0);
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  backdrop-filter: blur(6px);
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+#patient-status-management > .paging > .page-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+#patient-status-management > .paging > .page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+#patient-status-management > .paging > .page-info {
+  color: rgb(0, 0, 0);
+  backdrop-filter: blur(4px);
+}

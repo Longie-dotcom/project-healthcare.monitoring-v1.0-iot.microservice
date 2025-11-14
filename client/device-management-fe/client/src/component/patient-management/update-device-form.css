@@ -1,0 +1,109 @@
+#update-device-form > .modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+#update-device-form > .modal-overlay > .modal-content {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  max-height: 80vh;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+#update-device-form > .modal-overlay > .modal-content::-webkit-scrollbar {
+  display: none;
+}
+
+#update-device-form > .modal-overlay > .modal-content h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+#update-device-form > .modal-overlay > .modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#update-device-form > .modal-overlay > .modal-content .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+#update-device-form > .modal-overlay > .modal-content form label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+#update-device-form > .modal-overlay > .modal-content form input,
+#update-device-form > .modal-overlay > .modal-content form select {
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  background-color: #dcdcdc;
+  font-size: 14px;
+}
+
+#update-device-form > .modal-overlay > .modal-content .modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+#update-device-form > .modal-overlay > .modal-content .btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+#update-device-form > .modal-overlay > .modal-content .btn.update {
+  background-color: #27ae60;
+  color: white;
+}
+
+#update-device-form > .modal-overlay > .modal-content .btn.update:hover {
+  background-color: #1e8449;
+}
+
+#update-device-form > .modal-overlay > .modal-content .btn.cancel {
+  background-color: #e74c3c;
+  color: white;
+}
+
+#update-device-form > .modal-overlay > .modal-content .btn.cancel:hover {
+  background-color: #c0392b;
+}
+
+.loading-text {
+  text-align: center;
+  color: #555;
+  font-size: 16px;
+  margin: 30px 0;
+}
+
+@media (max-width: 768px) {
+  #update-device-form > .modal-overlay > .modal-content {
+    width: 95%;
+  }
+}

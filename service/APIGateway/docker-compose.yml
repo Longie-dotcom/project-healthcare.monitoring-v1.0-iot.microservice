@@ -1,0 +1,12 @@
+services:
+  apigateway:
+    container_name: apigateway
+    build:
+      context: .
+      dockerfile: APIGateway/Dockerfile
+    ports:
+      - "5000:8080"
+    env_file:
+      - APIGateway/.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development

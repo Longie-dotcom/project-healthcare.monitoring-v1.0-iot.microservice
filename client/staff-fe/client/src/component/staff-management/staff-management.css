@@ -1,0 +1,173 @@
+#staff-management {
+  padding: 20px;
+}
+
+/* Header */
+#staff-management > .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+#staff-management > .header > div {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+#staff-management > .header .filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#staff-management .filter select,
+#staff-management .filter input,
+#staff-management .filter button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#staff-management .filter button:hover {
+  background-color: #3498db;
+  color: white;
+}
+
+#staff-management > .header > button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background-color: #ffffff;
+  color: black;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  padding: 1%;
+}
+#staff-management > .header > button:hover {
+  color: #ffffff;
+  background-color: #3498db;
+}
+
+/* Filter tags */
+#staff-management .filtering-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+#staff-management .filter-tag {
+  background-color: #045c97;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+#staff-management .filter-tag:hover {
+  background-color: #fff;
+  color: #045c97;
+}
+
+/* Empty list */
+#staff-management .empty-list {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-top: 10vh;
+  font-weight: 600;
+  color: #9cafbc;
+}
+
+/* Staff list */
+.staff-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Header row */
+.staff-list-header {
+  display: grid;
+  grid-template-columns: 2fr 2fr 2fr 2fr 3fr;
+  font-weight: bold;
+  padding: 12px 16px;
+  background-color: #f0f4f8;
+  border-radius: 8px;
+}
+
+/* Staff row */
+.staff-card {
+  display: grid;
+  grid-template-columns: 2fr 2fr 2fr 2fr 3fr;
+  background-color: #f7f7f7;
+  padding: 12px 16px;
+  border-radius: 8px;
+  align-items: center;
+  transition: background-color 0.2s ease-in-out;
+}
+.staff-card:hover {
+  background-color: #e2e2e2;
+}
+
+/* Action buttons */
+.staff-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.staff-actions > .btn {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #fff;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+.staff-actions > .btn.delete { background-color: #e74c3c; }
+.staff-actions > .btn.delete:hover { background-color: #c0392b; }
+
+.staff-actions > .btn.update { background-color: #f39c12; }
+.staff-actions > .btn.update:hover { background-color: #d68910; }
+
+.staff-actions > .btn.detail { background-color: #3498db; }
+.staff-actions > .btn.detail:hover { background-color: #073a5c; }
+
+/* Pagination */
+#staff-management .paging {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+#staff-management .paging > .page-btn {
+  background: rgba(255, 255, 255, 0.50);
+  color: rgb(0, 0, 0);
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  backdrop-filter: blur(6px);
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+#staff-management .paging > .page-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+#staff-management .paging > .page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+#staff-management .paging > .page-info {
+  color: rgb(0, 0, 0);
+  backdrop-filter: blur(4px);
+}
