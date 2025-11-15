@@ -2,6 +2,7 @@
 using Application.DTO;
 using Application.Interface.IService;
 using AutoMapper;
+using Domain.Aggregate;
 using Domain.DomainException;
 using Domain.Entity;
 using Domain.IRepository;
@@ -32,8 +33,18 @@ namespace Application.Service
         {
             var repo = unitOfWork.GetRepository<IRoomProfileRepository>();
             var rooms = await repo.GetAllAsync();
-            var devices = rooms.SelectMany(r => r.DeviceProfiles);
-            return mapper.Map<IEnumerable<RoomProfileDTO>>(devices);
+            return mapper.Map<IEnumerable<RoomProfileDTO>>(rooms);
+        }
+
+        public void CreateRoomProfile(DeviceCreate dto)
+        {
+            var repo = unitOfWork.GetRepository<IRoomProfileRepository>();
+            var room = new RoomProfile(
+                Guid.NewGuid(),
+                dto.EdgeKey,
+                dto.IpAddress ?? "",
+                dto.RoomName ?? "");
+            repo.Add(room);
         }
 
         public async Task SyncIamInfoAsync(UpdateUser dto)

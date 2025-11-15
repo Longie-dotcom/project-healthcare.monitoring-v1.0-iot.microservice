@@ -1,5 +1,4 @@
-﻿using Application.DTO;
-using Application.Interface.IMessagePublisher;
+﻿using Application.Interface.IMessagePublisher;
 using HCM.MessageBrokerDTOs;
 using MassTransit;
 using Microsoft.Extensions.Logging;
@@ -18,22 +17,17 @@ namespace Infrastructure.Messaging.Publisher
             _logger = logger;
         }
 
-        public async Task PublishAsync(IAMSyncUpdateDTO dto)
+        public async Task PublishAsync(UpdateUser dto)
         {
-            _logger.LogInformation("Publishing IAM update for {IdentityNumber}", dto.IdentityNumber);
-
-            // Email and phone can not be updated from staff service
-            var mappedDto = new UpdateUser()
+            try
             {
-                IdentityNumber = dto.IdentityNumber,
-                PerformedBy = dto.PerformedBy,
-                Address = dto.Address,
-                Dob = dto.DateOfBirth,
-                Name = dto.FullName,
-                Gender = dto.Gender,
-            };
-
-            await _publishEndpoint.Publish(mappedDto);
+                _logger.LogInformation($"Publishing IAM update for {dto.IdentityNumber}");
+                await _publishEndpoint.Publish(dto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Failed when publishing IAM update for {dto.IdentityNumber}, detail: {ex.Message}");
+            }
         }
     }
 }

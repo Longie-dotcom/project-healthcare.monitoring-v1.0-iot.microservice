@@ -9,10 +9,9 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="15.0.1" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-    <PackageReference Include="FSA.LaboratoryManagement.Authorization" Version="1.0.2" />
     <PackageReference Include="Google.Protobuf" Version="3.33.0" />
     <PackageReference Include="Grpc.Core.Api" Version="2.71.0" />
-    <PackageReference Include="HCM.MessageBrokerDTOs" Version="1.0.8" />
+    <PackageReference Include="HCM.MessageBrokerDTOs" Version="1.0.9" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.9" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
   </ItemGroup>

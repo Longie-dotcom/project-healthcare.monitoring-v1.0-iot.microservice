@@ -1,5 +1,4 @@
-﻿using Application.DTO;
-using Application.Interface.IMessagePublisher;
+﻿using Application.Interface.IMessagePublisher;
 using HCM.MessageBrokerDTOs;
 using MassTransit;
 using Microsoft.Extensions.Logging;
@@ -18,23 +17,17 @@ namespace Infrastructure.MessageBroker.Publisher
             _logger = logger;
         }
 
-        public async Task PublishAsync(SyncUpdateUserDTO dto)
+        public async Task PublishAsync(UpdateUser dto)
         {
-            _logger.LogInformation($"Publishing user update message for {dto.IdentityNumber}");
-
-            var mappedDto = new UpdateUser()
-            { 
-                IdentityNumber = dto.IdentityNumber,
-                PerformedBy = dto.PerformedBy,
-                Email = dto.Email,
-                Address = dto.Address,
-                Dob = dto.DateOfBirth,
-                Name = dto.FullName,
-                Gender = dto.Gender,
-                Phone = dto.Phone,
-            };
-
-            await _publishEndpoint.Publish(mappedDto);
+            try
+            {
+                _logger.LogInformation($"Publishing user update message for {dto.IdentityNumber}");
+                await _publishEndpoint.Publish(dto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Failed when publishing user update message for {dto.IdentityNumber}, {ex.Message}");
+            }
         }
     }
 }

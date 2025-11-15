@@ -25,16 +25,32 @@ namespace Infrastructure.Messaging.Publisher
         #region Methods
         public async Task AssignSensor(PatientSensorCreate dto)
         {
-            _logger.LogInformation(
-                $"Publish create sensor with key: {dto.SensorKey} of controller: {dto.ControllerKey} in edge: {dto.EdgeKey}");
-            await _publishEndpoint.Publish(dto);
+            try
+            {
+                _logger.LogInformation(
+                    $"Publish create sensor with key: {dto.SensorKey} of controller: {dto.ControllerKey} in edge: {dto.EdgeKey}");
+                await _publishEndpoint.Publish(dto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(
+                    $"Failed when publish create sensor with key: {dto.SensorKey} of controller: {dto.ControllerKey} in edge: {dto.EdgeKey}, {ex.Message}");
+            }
         }
 
         public async Task UnassignSensor(PatientSensorRemove dto)
         {
-            _logger.LogInformation(
-                $"Publish remove sensor with key: {dto.SensorKey} of controller: {dto.ControllerKey} in edge: {dto.EdgeKey}");
-            await _publishEndpoint.Publish(dto);
+            try
+            {
+                _logger.LogInformation(
+                    $"Publish remove sensor with key: {dto.SensorKey} of controller: {dto.ControllerKey} in edge: {dto.EdgeKey}");
+                await _publishEndpoint.Publish(dto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(
+                    $"Failed when publish create sensor with key: {dto.SensorKey} of controller: {dto.ControllerKey} in edge: {dto.EdgeKey}, {ex.Message}");
+            }
         }
         #endregion
     }

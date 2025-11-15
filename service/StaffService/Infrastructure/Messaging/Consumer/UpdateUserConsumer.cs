@@ -1,5 +1,4 @@
-﻿using Application.DTO;
-using Application.Interface.IService;
+﻿using Application.Interface.IService;
 using HCM.MessageBrokerDTOs;
 using MassTransit;
 
@@ -25,17 +24,7 @@ namespace Infrastructure.Messaging.Consumer
             try
             {
                 var message = context.Message;
-                await staffService.SyncUpdateAsync(new IAMSyncUpdateDTO()
-                {
-                    PerformedBy = message.PerformedBy,
-                    IdentityNumber = message.IdentityNumber,
-                    Address = message.Address,
-                    DateOfBirth = message.Dob,
-                    FullName = message.Name,
-                    Gender = message.Gender,
-                    Phone = message.Phone,
-                    Email = message.Email,
-                });
+                await staffService.SyncUpdateAsync(message);
             }
             catch (Exception ex)
             {

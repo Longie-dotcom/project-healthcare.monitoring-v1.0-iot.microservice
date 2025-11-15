@@ -24,7 +24,7 @@ namespace Domain.Entity
         }
         #endregion
 
-        protected PatientStaff() { }
+        public PatientStaff() { }
 
         public PatientStaff(
             Guid patientStaffId,

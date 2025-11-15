@@ -1,10 +1,36 @@
 import React, { useState } from "react";
 import "./device-detail.css";
 
-function ControllerCard({ controller, onRelease, onReassign, onAssignSensor, onUnassignSensor, onReassignSensor }) {
+function ControllerCard({
+  controller,
+  onRelease,
+  onReassign,
+  onAssignSensor,
+  onUnassignSensor,
+  onReassignSensor,
+  onUpdateController,
+  onUpdateSensor
+}) {
+  // Editable fields for controller
+  const [editBed, setEditBed] = useState(controller.bedNumber || "");
+  const [editIp, setEditIp] = useState(controller.ipAddress || "");
+  const [editFirmware, setEditFirmware] = useState(controller.firmwareVersion || "");
+  const [editActive, setEditActive] = useState(controller.isActive);
+
+  // Sensor creation fields
   const [type, setType] = useState("");
   const [unit, setUnit] = useState("");
   const [description, setDescription] = useState("");
+
+  const handleUpdateController = () => {
+    onUpdateController({
+      controllerKey: controller.controllerKey,
+      bedNumber: editBed,
+      ipAddress: editIp,
+      firmwareVersion: editFirmware,
+      isActive: controller.isActive
+    });
+  };
 
   const handleAssignSensor = () => {
     if (!controller) return;
@@ -22,19 +48,67 @@ function ControllerCard({ controller, onRelease, onReassign, onAssignSensor, onU
   return (
     <div className={`record-card ${controller.isActive ? "active-card" : "inactive-card"}`}>
       <div className="controller-info">
+
         <div className="controller-key">
           <strong>Controller Key:</strong> {controller.controllerKey}
         </div>
+
         <div className="details">
-          <div><strong>Bed Number:</strong> {controller.bedNumber}</div>
-          <div><strong>Firmware Version:</strong> {controller.firmwareVersion}</div>
+          {/* Editable fields */}
+          <div>
+            <strong>Bed Number:</strong>
+            <input
+              value={editBed}
+              onChange={(e) => setEditBed(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <strong>Firmware Version:</strong>
+            <input
+              value={editFirmware}
+              onChange={(e) => setEditFirmware(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <strong>IP Address:</strong>
+            <input
+              value={editIp}
+              onChange={(e) => setEditIp(e.target.value)}
+            />
+          </div>
+
           <div><strong>Status:</strong> {controller.isActive ? "Active" : "Inactive"}</div>
-          {controller.isActive && <button onClick={() => onRelease({ controllerKey: controller.controllerKey })}>Release</button>}
-          {!controller.isActive && <button onClick={() => onReassign({ controllerKey: controller.controllerKey })}>Re-assign</button>}
+
+          <button
+            className="update-btn"
+            onClick={handleUpdateController}
+          >
+            Update
+          </button>
+
+          {controller.isActive && (
+            <button
+              className="release-btn"
+              onClick={() => onRelease({ controllerKey: controller.controllerKey })}
+            >
+              Release
+            </button>
+          )}
+
+          {!controller.isActive && (
+            <button
+              className="reassign-btn"
+              onClick={() => onReassign({ controllerKey: controller.controllerKey })}
+            >
+              Re-assign
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Sensor Assignment */}
+      {/* Assign new sensor */}
       <div className="assign-controls">
         <input placeholder="Type" value={type} onChange={(e) => setType(e.target.value)} />
         <input placeholder="Unit" value={unit} onChange={(e) => setUnit(e.target.value)} />
@@ -44,18 +118,83 @@ function ControllerCard({ controller, onRelease, onReassign, onAssignSensor, onU
 
       {/* Sensors */}
       <div className="sensor-info">
-        {(controller.sensors || []).map((s, i) => (
-          <div key={i} className="record-card sensor-card">
-            <div><strong>Sensor Key:</strong> {s.sensorKey}</div>
-            <div><strong>Status:</strong> {s.isActive ? "Active" : "Inactive"}</div>
-            {s.isActive && <button onClick={() => onUnassignSensor({ controllerKey: controller.controllerKey, sensorKey: s.sensorKey })}>Unassign</button>}
-            {!s.isActive && <button onClick={() => onReassignSensor({ controllerKey: controller.controllerKey, sensorKey: s.sensorKey })}>Reassign</button>}
-          </div>
-        ))}
+        {(controller.sensors || []).map((s, i) => {
+          const [editSensorType, setEditSensorType] = useState(s.type || "");
+          const [editSensorUnit, setEditSensorUnit] = useState(s.unit || "");
+          const [editSensorDescription, setEditSensorDescription] = useState(s.description || "");
+
+          const updateSensor = () => {
+            onUpdateSensor({
+              controllerKey: controller.controllerKey,
+              sensorKey: s.sensorKey,
+              type: editSensorType,
+              unit: editSensorUnit,
+              description: editSensorDescription,
+              isActive: s.isActive
+            });
+          };
+
+          return (
+            <div key={i} className="record-card sensor-card">
+              <div><strong>Sensor Key:</strong> {s.sensorKey}</div>
+
+              <div>
+                <strong>Type:</strong>
+                <input
+                  value={editSensorType}
+                  onChange={(e) => setEditSensorType(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <strong>Unit:</strong>
+                <input
+                  value={editSensorUnit}
+                  onChange={(e) => setEditSensorUnit(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <strong>Description:</strong>
+                <input
+                  value={editSensorDescription}
+                  onChange={(e) => setEditSensorDescription(e.target.value)}
+                />
+              </div>
+
+              <div><strong>Status:</strong> {s.isActive ? "Active" : "Inactive"}</div>
+
+              <button onClick={updateSensor}>Update</button>
+
+              {s.isActive && (
+                <button
+                  onClick={() => onUnassignSensor({
+                    controllerKey: controller.controllerKey,
+                    sensorKey: s.sensorKey
+                  })}
+                >
+                  Unassign
+                </button>
+              )}
+
+              {!s.isActive && (
+                <button
+                  onClick={() => onReassignSensor({
+                    controllerKey: controller.controllerKey,
+                    sensorKey: s.sensorKey
+                  })}
+                >
+                  Reassign
+                </button>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 }
+
 
 function DeviceDetail({ device, assignController, unassignController, assignSensor, unassignSensor, updateController, updateSensor, setReloadDetail, onClose }) {
   if (!device) return null;
@@ -162,6 +301,8 @@ function DeviceDetail({ device, assignController, unassignController, assignSens
                 onAssignSensor={handleAssignSensor}
                 onUnassignSensor={handleUnassignSensor}
                 onReassignSensor={handleReassignSensor}
+                onUpdateController={handleUpdateController}
+                onUpdateSensor={handleUpdateSensor}
               />
             ))
           }

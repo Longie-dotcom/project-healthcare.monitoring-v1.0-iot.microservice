@@ -1,14 +1,18 @@
-/* Main container */
+/* -------------------------------------------------
+   ROOT CONTAINER
+--------------------------------------------------*/
 #device-detail-child {
   background: #fff;
   border-radius: 12px;
   padding: 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   width: 100%;
-  margin-left: 4%;
   max-width: 700px;
+  margin-left: 4%;
   max-height: 70vh;
   overflow-y: auto;
+
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -17,87 +21,93 @@
   display: none;
 }
 
-/* Header */
-#device-detail-child>.header {
+/* -------------------------------------------------
+   HEADER
+--------------------------------------------------*/
+#device-detail-child > .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-#device-detail-child>.header>h3 {
+#device-detail-child > .header > h3 {
   font-size: 1.2rem;
   font-weight: 600;
   color: #222;
 }
 
-#device-detail-child>.header>button {
-  background-color: #000;
+#device-detail-child > .header > button {
+  background: #000;
   color: #fff;
   padding: 6px 12px;
-  border-radius: 8px;
   border: none;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.2s ease-in-out;
+  transition: background 0.2s;
 }
 
-#device-detail-child>.header>button:hover {
-  background-color: rgb(60, 60, 60);
+#device-detail-child > .header > button:hover {
+  background: #3a3a3a;
 }
 
-/* Info grid */
-#device-detail-child>.info-grid {
+/* -------------------------------------------------
+   INFO GRID
+--------------------------------------------------*/
+#device-detail-child > .info-grid {
   font-size: 0.95rem;
 }
 
-#device-detail-child>.info-grid>div {
+#device-detail-child > .info-grid > div {
   display: grid;
-  gap: 5%;
   grid-template-columns: 1fr 1fr;
-  /* two columns by default */
+  gap: 5%;
 }
 
-#device-detail-child>.info-grid>div>div {
+#device-detail-child > .info-grid > div > div {
   display: flex;
   justify-content: space-between;
-  background-color: #f0f0f0;
+  background: #f0f0f0;
   padding: 6px;
   border-radius: 6px;
 }
 
-/* Make the first child (Edge Key) span both columns */
-#device-detail-child>.info-grid>div>div:first-child {
+/* Edge Key spans full width */
+#device-detail-child > .info-grid > div > div:first-child {
   grid-column: 1 / -1;
 }
 
-/* Sections */
-#device-detail-child>.section {
+/* -------------------------------------------------
+   SECTION WRAPPER
+--------------------------------------------------*/
+#device-detail-child > .section {
   margin-top: 24px;
-  border-top: 1px solid #e5e5e5;
   padding-top: 12px;
+  border-top: 1px solid #e5e5e5;
 }
 
-#device-detail-child>.section>h4 {
+#device-detail-child > .section > h4 {
   font-size: 1rem;
   margin-bottom: 8px;
 }
 
-/* Assign controls */
-#device-detail-child>.section>.assign-controls {
+/* -------------------------------------------------
+   ASSIGN CONTROLS (for controllers)
+--------------------------------------------------*/
+#device-detail-child > .section > .assign-controls {
   display: flex;
-  gap: 8px;
   flex-direction: column;
+  gap: 8px;
   margin-bottom: 12px;
 }
 
-#device-detail-child>.section>.assign-controls>input[type="text"] {
+#device-detail-child > .section > .assign-controls > input[type="text"] {
   padding: 6px 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  flex: 1;
   font-size: 0.9rem;
 }
 
-#device-detail-child>.section>.assign-controls>button {
+#device-detail-child > .section > .assign-controls > button {
   padding: 6px 12px;
   border-radius: 6px;
   border: none;
@@ -107,296 +117,298 @@
   transition: background 0.2s;
 }
 
-#device-detail-child>.section>.assign-controls>button:hover {
+#device-detail-child > .section > .assign-controls > button:hover {
   background: #333;
 }
 
-/* Record cards (controllers) */
-#device-detail-child>.section>div>.record-card {
-  border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 12px;
-  display: grid;
-  gap: 8px 12px;
+/* -------------------------------------------------
+   CONTROLLER RECORD CARDS
+--------------------------------------------------*/
+#device-detail-child > .section > div > .record-card {
   border: 1px solid #e2e2e2;
-}
-
-/* Inactive controller card */
-#device-detail-child > .section > div > .inactive-card {
   border-radius: 8px;
   padding: 10px;
   margin-bottom: 12px;
+
   display: grid;
   gap: 8px 12px;
-  border: 1px solid #d3d3d3; /* lighter border */
-  background-color: #f5f5f5; /* light gray background */
-  opacity: 0.7; /* slightly faded */
-  filter: grayscale(80%); /* subtle desaturation */
-  transition: all 0.3s ease-in-out;
 }
 
-/* Optional hover effect to highlight */
+/* Inactive Card Styling */
+#device-detail-child > .section > div > .inactive-card {
+  border: 1px solid #d3d3d3;
+  background: #f5f5f5;
+  opacity: 0.7;
+  filter: grayscale(80%);
+  transition: 0.3s;
+}
+
 #device-detail-child > .section > div > .inactive-card:hover {
   border-color: #bbb;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-/* Buttons inside record cards */
-#device-detail-child>.section>div>.record-card>.btn {
-  grid-column: span 2;
-  justify-self: start;
-  margin-top: 6px;
-}
-
-#device-detail-child>.section>div>.record-card>.btn.release {
-  background-color: #d62828;
-}
-
-#device-detail-child>.section>div>.record-card>.btn.release:hover {
-  background-color: #b91d1d;
-}
-
-#device-detail-child>.section>div>.record-card>.btn.unassign {
-  background-color: #e67e22;
-}
-
-#device-detail-child>.section>div>.record-card>.btn.unassign:hover {
-  background-color: #cf6c17;
-}
-
-#device-detail-child>.section>div>.record-card>.controller-info {
+/* -------------------------------------------------
+   CONTROLLER INFO BLOCK
+--------------------------------------------------*/
+#device-detail-child > .section > div > .record-card > .controller-info {
   display: grid;
   grid-template-columns: 1fr;
-  font-size: 0.9vw;
   gap: 5px;
   padding: 10px 16px;
-  margin-top: 8px;
+
   border-radius: 10px;
-  background-color: #f9f9f9;
+  background: #f9f9f9;
+  font-size: 0.9vw;
+
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: 0.2s;
 }
 
-/* Hover effect */
-#device-detail-child>.section>div>.record-card>.controller-info:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+#device-detail-child > .section > div > .record-card > .controller-info:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.215);
 }
 
-/* Controller Key spans full width */
-.controller-info>.controller-key {
+/* Controller Key full width */
+#device-detail-child .controller-info > .controller-key {
   grid-column: 1 / -1;
   display: flex;
   justify-content: space-between;
-  background-color: #f0f0f0;
+  background: #f0f0f0;
   padding: 6px;
   border-radius: 6px;
-  margin-bottom: 5px;
 }
 
-/* Details in two columns */
-.controller-info>.details {
+/* Controller details (2 columns) */
+#device-detail-child .controller-info > .details {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
 }
 
-.controller-info>.details>div {
+#device-detail-child .controller-info > .details > div {
   display: flex;
   justify-content: space-between;
-  background-color: #f0f0f0;
+  background: #f0f0f0;
   padding: 6px;
   border-radius: 6px;
 }
 
-/* Make the button span both columns */
-.controller-info>.details>div:nth-child(3) {
-  grid-column: 1 / -1;
+#device-detail-child .controller-info > .details > div > input {
+  border: none;
+  background-color: transparent;
 }
 
-.controller-info button {
+/* Controller buttons */
+#device-detail-child .controller-info button {
   width: 100%;
-  border: none;
   padding: 5px;
+  border: none;
   border-radius: 5px;
-  background-color: rgb(216, 0, 0);
   color: #fff;
   cursor: pointer;
+  transition: 0.2s;
 }
 
-.controller-info button:hover {
-  background-color: #cf6c17;
+#device-detail-child .controller-info .release-btn {
+  background-color: #df0606;
 }
 
-/* Container for sensor assignment */
-#device-detail-child .record-card .assign-controls {
-  margin-top: 12px;
+#device-detail-child .controller-info .release-btn:hover {
+  background-color: #b10000;
+}
+
+#device-detail-child .controller-info .reassign-btn {
+  background-color: #0881e5;
+}
+
+#device-detail-child .controller-info .reassign-btn:hover {
+  background-color: rgb(59, 0, 177);
+}
+
+#device-detail-child .controller-info .update-btn {
+  background-color: #239afb;
+}
+
+#device-detail-child .controller-info .update-btn:hover {
+  background-color: rgb(86, 22, 214);
+}
+
+/* -------------------------------------------------
+   SENSOR ASSIGN
+--------------------------------------------------*/
+#device-detail-child .record-card > .assign-controls {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  margin-top: 12px;
 }
 
-/* Input fields */
-#device-detail-child .record-card .assign-controls input {
+#device-detail-child .record-card > .assign-controls > input {
   padding: 8px 12px;
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 0.9vw;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: 0.2s border, 0.2s box-shadow;
 }
 
-#device-detail-child .record-card .assign-controls input:focus {
+#device-detail-child .record-card > .assign-controls > input:focus {
   border-color: #3498db;
-  box-shadow: 0 0 6px rgba(52, 152, 219, 0.3);
+  box-shadow: 0 0 6px rgba(52,152,219,0.3);
 }
 
-/* Assign button */
-#device-detail-child .record-card .assign-controls button {
+#device-detail-child .record-card > .assign-controls > button {
   width: 30%;
   padding: 8px 12px;
-  border-radius: 8px;
   border: none;
-  background-color: #3498db;
+  border-radius: 8px;
+
+  align-self: flex-start;
+  background: #3498db;
   color: #fff;
   font-weight: 500;
+
   cursor: pointer;
-  align-self: flex-start;
-  transition: all 0.2s ease-in-out;
+  transition: 0.2s;
 }
 
-#device-detail-child .record-card .assign-controls button:hover {
-  background-color: #217dbb;
-  color: #fff;
+#device-detail-child .record-card > .assign-controls > button:hover {
+  background: #217dbb;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
-/* Sensor cards inside controllers */
-/* Sensor card container */
-#device-detail-child .sensor-info .sensor-card {
+/* -------------------------------------------------
+   SENSOR CARDS
+--------------------------------------------------*/
+#device-detail-child .sensor-info > .sensor-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   padding: 10px 16px;
   margin-top: 8px;
+
   border-radius: 10px;
+  background: #f9f9f9;
   font-size: 0.9vw;
-  background-color: #f9f9f9;
+
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: 0.2s;
 }
 
-/* Hover effect */
-#device-detail-child .sensor-info .sensor-card:hover {
-  transform: translateY(-2px);
+#device-detail-child .sensor-info > .sensor-card:hover {
   box-shadow: 0 6px 20px rgba(0,0,0,0.12);
 }
 
-/* Sensor info text */
-#device-detail-child .sensor-info .sensor-card > div:first-child {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  color: #333;
-}
-
-/* Unassign button */
-#device-detail-child .sensor-info .sensor-card .btn {
-  border: none;
+/* Sensor buttons */
+#device-detail-child .sensor-info > .sensor-card > .btn {
   padding: 6px 12px;
+  border: none;
   border-radius: 6px;
   color: #fff;
   cursor: pointer;
+  transition: 0.2s;
   font-size: 0.85rem;
-  transition: background-color 0.2s ease;
 }
 
-#device-detail-child .sensor-info .sensor-card .unassign {
-  background-color: #e74c3c;
+#device-detail-child .sensor-info > .sensor-card > .unassign {
+  background: #e74c3c;
 }
 
-#device-detail-child .sensor-info .sensor-card unassign:hover {
-  background-color: #c0392b;
+#device-detail-child .sensor-info > .sensor-card > .unassign:hover {
+  background: #c0392b;
 }
 
-#device-detail-child .sensor-info .sensor-card .re-assign {
-  background-color: #4e67d5;
+#device-detail-child .sensor-info > .sensor-card > .re-assign {
+  background: #4e67d5;
 }
 
-#device-detail-child .sensor-info .sensor-card .re-assign:hover {
-  background-color: #3c55c1;
+#device-detail-child .sensor-info > .sensor-card > .re-assign:hover {
+  background: #3c55c1;
 }
 
-
-/* Toggle button */
-#device-detail-child>.section>.toggle-btn {
+/* -------------------------------------------------
+   TOGGLE BUTTON
+--------------------------------------------------*/
+#device-detail-child > .section > .toggle-btn {
   margin-bottom: 8px;
+  padding: 6px 10px;
+
   background: #555;
   color: #fff;
-  padding: 6px 10px;
   border: none;
   border-radius: 6px;
+
   cursor: pointer;
   transition: background 0.2s;
   font-size: 0.9rem;
 }
 
-#device-detail-child>.section>.toggle-btn:hover {
+#device-detail-child > .section > .toggle-btn:hover {
   background: #333;
 }
 
-/* Scrollable list for released/unassigned controllers */
-#device-detail-child>.section>.scrollable-list {
+/* -------------------------------------------------
+   RELEASED CONTROLLER LIST
+--------------------------------------------------*/
+#device-detail-child > .section > .scrollable-list {
   max-height: 180px;
   overflow-y: auto;
-  margin-top: 10px;
+
   padding: 8px 6px;
-  background-color: #fafafa;
-  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.05);
+  margin-top: 10px;
+
+  background: #fafafa;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.05);
 }
 
-#device-detail-child>.section>.scrollable-list::-webkit-scrollbar {
+#device-detail-child > .section > .scrollable-list::-webkit-scrollbar {
   width: 6px;
 }
 
-#device-detail-child>.section>.scrollable-list::-webkit-scrollbar-thumb {
+#device-detail-child > .section > .scrollable-list::-webkit-scrollbar-thumb {
   background: #c2c2c2;
   border-radius: 4px;
 }
 
-#device-detail-child>.section>.scrollable-list::-webkit-scrollbar-thumb:hover {
+#device-detail-child > .section > .scrollable-list::-webkit-scrollbar-thumb:hover {
   background: #999;
 }
 
-#device-detail-child>.section>.scrollable-list>.record-card {
+/* Each card in scroll list */
+#device-detail-child > .section > .scrollable-list > .record-card {
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
 
-#device-detail-child>.section>.scrollable-list>.record-card>div {
+#device-detail-child > .section > .scrollable-list > .record-card > div {
   margin: 2%;
-  background-color: #f0f0f0;
+  background: #f0f0f0;
   padding: 6px;
   border-radius: 6px;
 }
 
-/* Responsive adjustments */
+/* -------------------------------------------------
+   RESPONSIVE
+--------------------------------------------------*/
 @media (max-width: 768px) {
   #device-detail-child {
     margin-left: 2%;
     max-width: 95%;
   }
 
-  #device-detail-child>.info-grid {
+  #device-detail-child > .info-grid {
     grid-template-columns: 1fr;
   }
 
-  #device-detail-child>.section>div>.record-card {
+  #device-detail-child > .section > div > .record-card {
     grid-template-columns: 1fr;
   }
 
-  #device-detail-child>.section>div>.record-card>.record-card.sensor-card {
-    grid-template-columns: 1fr;
+  #device-detail-child .sensor-info > .sensor-card {
+    flex-direction: column;
+    align-items: start;
   }
 }

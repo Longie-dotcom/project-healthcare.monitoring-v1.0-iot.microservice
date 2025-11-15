@@ -25,23 +25,47 @@ namespace Infrastructure.Messaging.Publisher
         #region Methods
         public async Task PublishUpdateEdgeAsync(UpdateEdgeDeviceDTO dto)
         {
-            _logger.LogInformation(
-                $"Publish update edge with key: {dto.EdgeKey}");
-            await _publishEndpoint.Publish(dto);
+            try
+            {
+                _logger.LogInformation(
+                    $"Publish update edge with key: {dto.EdgeKey}");
+                await _publishEndpoint.Publish(dto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(
+                    $"Failed when publish update edge with key: {dto.EdgeKey}, {ex.Message}");
+            }
         }
 
         public async Task PublishUpdateControllerAsync(UpdateControllerDTO dto)
         {
-            _logger.LogInformation(
-                $"Publish update controller with key: {dto.ControllerKey} at the edge: {dto.EdgeKey}");
-            await _publishEndpoint.Publish(dto);
+            try
+            {
+                _logger.LogInformation(
+                    $"Publish update controller with key: {dto.ControllerKey} at the edge: {dto.EdgeKey}");
+                await _publishEndpoint.Publish(dto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(
+                    $"Failed when publish update controller with key: {dto.ControllerKey} at the edge: {dto.EdgeKey}, {ex.Message}");
+            }
         }
 
         public async Task PublishUpdateSensorAsync(UpdateSensorDTO dto)
         {
-            _logger.LogInformation(
-                $"Publish update sensor with key: {dto.SensorKey} of controller: {dto.ControllerKey} at the edge: {dto.EdgeKey}");
-            await _publishEndpoint.Publish(dto);
+            try
+            {
+                _logger.LogInformation(
+                    $"Publish update sensor with key: {dto.SensorKey} of controller: {dto.ControllerKey} at the edge: {dto.EdgeKey}");
+                await _publishEndpoint.Publish(dto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(
+                    $"Failed when publish update sensor with key: {dto.SensorKey} of controller: {dto.ControllerKey} at the edge: {dto.EdgeKey}, {ex.Message}");
+            }
         }
         #endregion
     }

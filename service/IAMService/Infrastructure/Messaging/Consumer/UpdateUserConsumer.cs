@@ -1,5 +1,4 @@
-﻿using Application.DTO;
-using Application.Interface.IService;
+﻿using Application.Interface.IService;
 using HCM.MessageBrokerDTOs;
 using MassTransit;
 using Microsoft.Extensions.Logging;
@@ -21,20 +20,15 @@ namespace Infrastructure.Messaging.Consumer
         public async Task Consume(ConsumeContext<UpdateUser> context)
         {
             var dto = context.Message;
-            _logger.LogInformation($"Received user updated for {dto.IdentityNumber}");
-
-            // IAM does not accept updated field phone and email from other services
-            var mappedDto = new SyncUpdateUserDTO()
+            try
             {
-                PerformedBy = dto.PerformedBy,
-                IdentityNumber = dto.IdentityNumber,
-                FullName = dto.Name,
-                Address = dto.Address,
-                DateOfBirth = dto.Dob,
-                Gender = dto.Gender,
-            };
-
-            await _userService.SyncUserUpdate(mappedDto);
+                _logger.LogInformation($"Received user updated for {dto.IdentityNumber}");
+                await _userService.SyncUserUpdate(context.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Failed when received user updated for {dto.IdentityNumber}, {ex.Message}");
+            }
         }
     }
 }

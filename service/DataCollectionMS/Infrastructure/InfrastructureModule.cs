@@ -10,6 +10,7 @@ using Infrastructure.Service;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace Infrastructure
 {
@@ -96,6 +97,8 @@ namespace Infrastructure
                     x.AddConsumer<UpdateDeviceProfileConsumer>();
                     x.AddConsumer<RemoveDeviceProfileConsumer>();
                     x.AddConsumer<PatientStaffAssignmentConsumer>();
+                    x.AddConsumer<CreateRoomProfile>();
+                    x.AddConsumer<SensorDataConsumer>();
 
                     x.UsingRabbitMq((context, cfg) =>
                     {
@@ -141,6 +144,16 @@ namespace Infrastructure
                         cfg.ReceiveEndpoint("data_collection_staff_assignment_consumer_queue", e =>
                         {
                             e.ConfigureConsumer<PatientStaffAssignmentConsumer>(context);
+                        });
+
+                        cfg.ReceiveEndpoint("data_collection_create_room_profile_consumer_queue", e =>
+                        {
+                            e.ConfigureConsumer<CreateRoomProfile>(context);
+                        });
+
+                        cfg.ReceiveEndpoint("sensor_data", e =>
+                        {
+                            e.ConfigureConsumer<SensorDataConsumer>(context);
                         });
                     });
                 });

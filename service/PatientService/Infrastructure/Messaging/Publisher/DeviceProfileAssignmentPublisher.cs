@@ -28,19 +28,29 @@ namespace Infrastructure.Messaging.Publisher
             try
             {
                 _logger.LogInformation(
-                    $"Publishing device profile for patient {dto.IdentityNumber}");
+                    $"Publishing assign new device profile for patient {dto.IdentityNumber}");
                 await _publishEndpoint.Publish(dto);
             }
             catch (Exception ex)
             {
                 _logger.LogInformation(
-                    $"Failed when published device profile for patient {dto.IdentityNumber}: {ex.Message}");
+                    $"Failed when published assign new device profile for patient {dto.IdentityNumber}: {ex.Message}");
             }
         }
 
-        public Task PublishUnassignDeviceProfile(DeviceProfileRemove dto)
+        public async Task PublishUnassignDeviceProfile(DeviceProfileRemove dto)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _logger.LogInformation(
+                    $"Publishing remove device profile for patient {dto.IdentityNumber}");
+                await _publishEndpoint.Publish(dto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(
+                    $"Failed when published remove device profile for patient {dto.IdentityNumber}: {ex.Message}");
+            }
         }
         #endregion
     }

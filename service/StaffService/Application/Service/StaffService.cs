@@ -8,6 +8,7 @@ using Domain.Aggregate;
 using Domain.Entity;
 using Domain.IRepository;
 using HCM.CodeFormatter;
+using HCM.MessageBrokerDTOs;
 using System.Data;
 
 namespace Application.Service
@@ -245,13 +246,13 @@ namespace Application.Service
 
             // Email and phone can not be updated from staff service
             await updateUserPublisher.PublishAsync(
-                new IAMSyncUpdateDTO()
+                new UpdateUser()
                 {
                     IdentityNumber = staff.IdentityNumber,
                     PerformedBy = dto.PerformedBy,
                     Address = dto.Address,
-                    DateOfBirth = dto.DateOfBirth,
-                    FullName = dto.FullName,
+                    Dob = dto.DateOfBirth,
+                    Name = dto.FullName,
                     Gender = dto.Gender,
                 });
 
@@ -261,7 +262,7 @@ namespace Application.Service
             return mapper.Map<StaffDTO>(staff);
         }
 
-        public async Task SyncUpdateAsync(IAMSyncUpdateDTO dto)
+        public async Task SyncUpdateAsync(UpdateUser dto)
         {
             var staffRepo = unitOfWork.GetRepository<IStaffRepository>();
             var staff = await staffRepo.GetStaffByIdentityNumber(dto.IdentityNumber);
@@ -270,8 +271,8 @@ namespace Application.Service
                 throw new StaffNotFound(
                     $"Staff with identity number:{dto.IdentityNumber} is not found.");
 
-            if (!string.IsNullOrEmpty(dto.FullName))
-                staff.UpdateFullName(dto.FullName);
+            if (!string.IsNullOrEmpty(dto.Name))
+                staff.UpdateFullName(dto.Name);
 
             if (!string.IsNullOrEmpty(dto.Gender))
                 staff.UpdateGender(dto.Gender);
@@ -285,8 +286,8 @@ namespace Application.Service
             if (!string.IsNullOrEmpty(dto.Phone))
                 staff.UpdatePhone(dto.Phone);
 
-            if (dto.DateOfBirth != null)
-                staff.UpdateDob(dto.DateOfBirth ?? DateTime.MinValue);
+            if (dto.Dob != null)
+                staff.UpdateDob(dto.Dob ?? DateTime.MinValue);
 
             await unitOfWork.CommitAsync(dto.PerformedBy);
         }
@@ -303,7 +304,7 @@ namespace Application.Service
             await unitOfWork.CommitAsync(dto.PerformedBy);
         }
 
-        public async Task SyncDeleteAsync(IAMSyncDeleteDTO dto)
+        public async Task SyncDeleteAsync(DeleteUser dto)
         {
             await unitOfWork.BeginTransactionAsync();
             var repo = unitOfWork.GetRepository<IStaffRepository>();

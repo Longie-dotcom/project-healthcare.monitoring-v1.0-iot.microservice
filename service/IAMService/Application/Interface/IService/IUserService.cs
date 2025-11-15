@@ -1,4 +1,5 @@
 ﻿using Application.DTO;
+using HCM.MessageBrokerDTOs;
 
 namespace Application.Interface.IService
 {
@@ -15,6 +16,6 @@ namespace Application.Interface.IService
         Task DeleteUserAsync(Guid userId, UserDeleteDTO dto);
         Task ChangePasswordAsync(Guid userId, ChangePasswordDTO dto);
 
-        Task SyncUserUpdate(SyncUpdateUserDTO dto);
+        Task SyncUserUpdate(UpdateUser dto);
     }
 }

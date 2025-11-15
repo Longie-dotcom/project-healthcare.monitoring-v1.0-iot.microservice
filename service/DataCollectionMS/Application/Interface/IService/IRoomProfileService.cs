@@ -7,6 +7,8 @@ namespace Application.Interface.IService
     {
         Task<IEnumerable<RoomProfileDTO>> GetRoomProfilesAsync();
 
+        void CreateRoomProfile(DeviceCreate dto);
+
         Task SyncIamInfoAsync(UpdateUser dto);
         Task CreateDeviceProfile(DeviceProfileCreate dto);
         Task RemoveDeviceProfile(DeviceProfileRemove dto);

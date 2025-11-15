@@ -10,6 +10,8 @@ namespace Domain.Entity
         #endregion
 
         #region Properties
+        [BsonId]
+        [BsonRepresentation(BsonType.String)]
         public Guid DeviceProfileID { get; private set; }
         public string IdentityNumber { get; private set; } = string.Empty; // assign from patient 
         public string FullName { get; private set; } = string.Empty;
@@ -47,7 +49,7 @@ namespace Domain.Entity
         }
         #endregion
 
-        protected DeviceProfile() { }
+        public DeviceProfile() { }
 
         public DeviceProfile(
             Guid deviceProfileID,

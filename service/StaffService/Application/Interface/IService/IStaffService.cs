@@ -1,4 +1,5 @@
 ﻿using Application.DTO;
+using HCM.MessageBrokerDTOs;
 
 namespace Application.Interface.IService
 {
@@ -8,8 +9,8 @@ namespace Application.Interface.IService
         Task<IEnumerable<StaffDTO>> GetAllAsync(QueryStaffDTO dto, string sort);
         Task<StaffDTO> CreateAsync(StaffCreateDTO dto);
         Task<StaffDTO> UpdateAsync(Guid staffId, StaffUpdateDTO dto);
-        Task SyncUpdateAsync(IAMSyncUpdateDTO dto);
+        Task SyncUpdateAsync(UpdateUser dto);
         Task DeleteAsync(Guid staffId, StaffDeleteDTO dto);
-        Task SyncDeleteAsync(IAMSyncDeleteDTO dto);
+        Task SyncDeleteAsync(DeleteUser dto);
     }
 }

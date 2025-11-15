@@ -143,6 +143,7 @@ namespace Infrastructure
 
                     services.AddScoped<IUpdateUserPublisher, UpdateUserPublisher>();
                     services.AddScoped<IDeviceProfileAssignmentPublisher, DeviceProfileAssignmentPublisher>();
+                    services.AddScoped<IStaffAssignmentPublisher, StaffAssignmentPublisher>();
                 });
 
                 InfrastructureLoggerBase(

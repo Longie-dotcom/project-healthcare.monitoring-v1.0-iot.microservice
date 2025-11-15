@@ -29,7 +29,7 @@ namespace Domain.Entity
         }
         #endregion
 
-        protected PatientSensor() { }
+        public PatientSensor() { }
 
         public PatientSensor(
             Guid patientSensorId,

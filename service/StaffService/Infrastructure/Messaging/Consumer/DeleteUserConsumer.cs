@@ -1,5 +1,4 @@
-﻿using Application.DTO;
-using Application.Interface.IService;
+﻿using Application.Interface.IService;
 using HCM.MessageBrokerDTOs;
 using MassTransit;
 
@@ -25,11 +24,7 @@ namespace Infrastructure.Messaging.Consumer
             try
             {
                 var message = context.Message;
-                await staffService.SyncDeleteAsync(new IAMSyncDeleteDTO()
-                {
-                    IdentityNumber = message.IdentityNumber,
-                    PerformedBy = message.PerformedBy,
-                });
+                await staffService.SyncDeleteAsync(message);
             }
             catch (Exception ex)
             {

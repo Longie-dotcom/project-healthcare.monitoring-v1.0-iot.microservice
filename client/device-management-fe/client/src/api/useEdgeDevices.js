@@ -1,5 +1,5 @@
 import api from "../helper/refreshTokenInstance";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 export function useEdgeDevices({ setLoading, setError, setInfo, setReload }) {
   const gatewayUrl = import.meta.env.VITE_GATEWAY_URL;
@@ -19,26 +19,26 @@ export function useEdgeDevices({ setLoading, setError, setInfo, setReload }) {
     setError(null);
     try {
       const { token } = getTokenAndUser();
-      const response = await api.get(`${gatewayUrl}/api/EdgeDevice`, {
+      const response = await api.get(`${gatewayUrl}/hcm/device-management/edge-device`, {
         params: { sort, PageIndex: pageIndex, PageLength: pageLength, Search: search || undefined },
         headers: { Authorization: `Bearer ${token}` },
       });
-      return response.data;
+      return response.data.payload;
     } catch (err) {
       setError(err.response?.data?.message || "Unable to load devices");
       return null;
     } finally { setLoading(false); }
   };
 
-  const getDeviceById = async (edgeDeviceID) => {
+  const getDeviceById = async ({ edgeDeviceID }) => {
     setLoading(true);
     setError(null);
     try {
       const { token } = getTokenAndUser();
-      const response = await api.get(`${gatewayUrl}/api/EdgeDevice/${edgeDeviceID}`, {
+      const response = await api.get(`${gatewayUrl}/hcm/device-management/edge-device/${edgeDeviceID}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      return response.data;
+      return response.data.payload;
     } catch (err) {
       setError(err.response?.data?.message || "Unable to load device detail");
       return null;
@@ -50,11 +50,11 @@ export function useEdgeDevices({ setLoading, setError, setInfo, setReload }) {
     setError(null);
     try {
       const { token, performedBy } = getTokenAndUser();
-      const response = await api.post(`${gatewayUrl}/api/EdgeDevice`, { performedBy, roomName, ipAddress, description },
+      const response = await api.post(`${gatewayUrl}/hcm/device-management/edge-device`, { performedBy, roomName, ipAddress, description },
         { headers: { Authorization: `Bearer ${token}` } });
       setInfo("Device created successfully");
       setReload(prev => prev + 1);
-      return response.data;
+      return response.data.payload;
     } catch (err) {
       setError(err.response?.data?.message || "Unable to create device");
       return null;
@@ -66,11 +66,11 @@ export function useEdgeDevices({ setLoading, setError, setInfo, setReload }) {
     setError(null);
     try {
       const { token, performedBy } = getTokenAndUser();
-      const response = await api.put(`${gatewayUrl}/api/EdgeDevice/${edgeDeviceID}`, { performedBy, roomName, ipAddress, description },
+      const response = await api.put(`${gatewayUrl}/hcm/device-management/edge-device/${edgeDeviceID}`, { performedBy, roomName, ipAddress, description },
         { headers: { Authorization: `Bearer ${token}` } });
       setInfo("Device updated successfully");
       setReload(prev => prev + 1);
-      return response.data;
+      return response.data.payload;
     } catch (err) {
       setError(err.response?.data?.message || "Unable to update device");
       return null;
@@ -82,7 +82,7 @@ export function useEdgeDevices({ setLoading, setError, setInfo, setReload }) {
     setError(null);
     try {
       const { token, performedBy } = getTokenAndUser();
-      await api.post(`${gatewayUrl}/api/EdgeDevice/${edgeDeviceID}/deactivate`, { performedBy },
+      await api.post(`${gatewayUrl}/hcm/device-management/edge-device/${edgeDeviceID}/deactivate`, { performedBy },
         { headers: { Authorization: `Bearer ${token}` } });
       setInfo("Edge device deactivated successfully");
       setReload(prev => prev + 1);
@@ -99,7 +99,7 @@ export function useEdgeDevices({ setLoading, setError, setInfo, setReload }) {
     setError(null);
     try {
       const { token, performedBy } = getTokenAndUser();
-      await api.post(`${gatewayUrl}/api/EdgeDevice/controller`, { edgeKey, bedNumber, ipAddress, firmwareVersion, performedBy },
+      await api.post(`${gatewayUrl}/hcm/device-management/edge-device/controller`, { edgeKey, bedNumber, ipAddress, firmwareVersion, performedBy },
         { headers: { Authorization: `Bearer ${token}` } });
       setInfo("Controller assigned successfully");
       setReload(prev => prev + 1);
@@ -113,12 +113,12 @@ export function useEdgeDevices({ setLoading, setError, setInfo, setReload }) {
     setError(null);
     try {
       const { token, performedBy } = getTokenAndUser();
-      const response = await api.put(`${gatewayUrl}/api/EdgeDevice/controller`,
+      const response = await api.put(`${gatewayUrl}/hcm/device-management/edge-device/controller`,
         { edgeKey, controllerKey, bedNumber, ipAddress, firmwareVersion, IsActive: isActive, PerformedBy: performedBy },
         { headers: { Authorization: `Bearer ${token}` } });
       setInfo("Controller updated successfully");
       setReload(prev => prev + 1);
-      return response.data;
+      return response.data.payload;
     } catch (err) {
       setError(err.response?.data?.message || "Unable to update controller");
       return null;
@@ -130,7 +130,7 @@ export function useEdgeDevices({ setLoading, setError, setInfo, setReload }) {
     setError(null);
     try {
       const { token, performedBy } = getTokenAndUser();
-      await api.delete(`${gatewayUrl}/api/EdgeDevice/controller`,
+      await api.delete(`${gatewayUrl}/hcm/device-management/edge-device/controller`,
         { data: { edgeKey, controllerKey, performedBy }, headers: { Authorization: `Bearer ${token}` } });
       setInfo("Controller unassigned successfully");
       setReload(prev => prev + 1);
@@ -147,7 +147,7 @@ export function useEdgeDevices({ setLoading, setError, setInfo, setReload }) {
     setError(null);
     try {
       const { token, performedBy } = getTokenAndUser();
-      await api.post(`${gatewayUrl}/api/EdgeDevice/sensor`,
+      await api.post(`${gatewayUrl}/hcm/device-management/edge-device/sensor`,
         { edgeKey, controllerKey, type, unit, description, performedBy },
         { headers: { Authorization: `Bearer ${token}` } });
       setInfo("Sensor assigned successfully");
@@ -162,12 +162,12 @@ export function useEdgeDevices({ setLoading, setError, setInfo, setReload }) {
     setError(null);
     try {
       const { token, performedBy } = getTokenAndUser();
-      const response = await api.put(`${gatewayUrl}/api/EdgeDevice/sensor`,
+      const response = await api.put(`${gatewayUrl}/hcm/device-management/edge-device/sensor`,
         { edgeKey, controllerKey, sensorKey, type, unit, description, IsActive: isActive, PerformedBy: performedBy },
         { headers: { Authorization: `Bearer ${token}` } });
       setInfo("Sensor updated successfully");
       setReload(prev => prev + 1);
-      return response.data;
+      return response.data.payload;
     } catch (err) {
       setError(err.response?.data?.message || "Unable to update sensor");
       return null;
@@ -179,7 +179,7 @@ export function useEdgeDevices({ setLoading, setError, setInfo, setReload }) {
     setError(null);
     try {
       const { token, performedBy } = getTokenAndUser();
-      await api.delete(`${gatewayUrl}/api/EdgeDevice/sensor`,
+      await api.delete(`${gatewayUrl}/hcm/device-management/edge-device/sensor`,
         { data: { edgeKey, controllerKey, sensorKey, performedBy }, headers: { Authorization: `Bearer ${token}` } });
       setInfo("Sensor unassigned successfully");
       setReload(prev => prev + 1);

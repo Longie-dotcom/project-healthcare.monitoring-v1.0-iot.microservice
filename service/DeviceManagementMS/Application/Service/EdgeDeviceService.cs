@@ -19,19 +19,22 @@ namespace Application.Service
         private readonly IUpdateDevicePublisher updateDevicePublisher;
         private readonly IPatientGrpcClient patientGrpcClient;
         private readonly ISensorAssignmentPublisher sensorAssignmentPublisher;
+        private readonly ICreateRoomPublisher createRoomPublisher;
 
         public EdgeDeviceService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
             IUpdateDevicePublisher updateDevicePublisher,
             IPatientGrpcClient patientGrpcClient,
-            ISensorAssignmentPublisher sensorAssignmentPublisher)
+            ISensorAssignmentPublisher sensorAssignmentPublisher,
+            ICreateRoomPublisher createRoomPublisher)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.updateDevicePublisher = updateDevicePublisher;
             this.patientGrpcClient = patientGrpcClient;
             this.sensorAssignmentPublisher = sensorAssignmentPublisher;
+            this.createRoomPublisher = createRoomPublisher;
         }
 
         #region Methods
@@ -82,7 +85,7 @@ namespace Application.Service
             await unitOfWork.CommitAsync(dto.PerformedBy);
 
             // publish
-            await PublishEdgeDeviceUpdateAsync(device, dto.PerformedBy ?? string.Empty);
+            await PublishCreateRoom(device, dto.PerformedBy ?? string.Empty);
 
             return mapper.Map<EdgeDeviceDTO>(device);
         }
@@ -466,6 +469,20 @@ namespace Application.Service
                 PerformedBy = performedBy
             };
             await sensorAssignmentPublisher.UnassignSensor(sensorDto);
+        }
+
+        private async Task PublishCreateRoom(EdgeDevice edgeDevice, string performedBy)
+        {
+            var roomCreateDto = new DeviceCreate()
+            {
+                EdgeKey = edgeDevice.EdgeKey,
+                RoomName = edgeDevice.RoomName,
+                IpAddress = edgeDevice.IpAddress,
+                IsActive = edgeDevice.IsActive,
+                PerformedBy = performedBy,
+            };
+
+            await createRoomPublisher.PublishCreateRoomAsync(roomCreateDto);
         }
         #endregion
     }

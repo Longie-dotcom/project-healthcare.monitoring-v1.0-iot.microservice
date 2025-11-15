@@ -55,7 +55,7 @@ namespace Application.DTO
 
     public class SensorDataDTO
     {
-        public BsonValue Value { get; set; } = BsonNull.Value;
+        public string Value { get; set; } = string.Empty;
         public DateTime RecordedAt { get; set; }
     }
 }

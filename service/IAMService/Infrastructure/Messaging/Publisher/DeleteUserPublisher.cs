@@ -1,5 +1,4 @@
-﻿using Application.DTO;
-using Application.Interface.IMessagePublisher;
+﻿using Application.Interface.IMessagePublisher;
 using HCM.MessageBrokerDTOs;
 using MassTransit;
 using Microsoft.Extensions.Logging;
@@ -17,17 +16,17 @@ namespace Infrastructure.MessageBroker.Publisher
             _logger = logger;
         }
 
-        public async Task PublishAsync(SyncDeleteUserDTO dto)
+        public async Task PublishAsync(DeleteUser dto)
         {
-            _logger.LogInformation($"Publishing user delete message for {dto.IdentityNumber}");
-            
-            var mappedDto = new DeleteUser()
-            { 
-                IdentityNumber = dto.IdentityNumber,
-                PerformedBy = dto.PerformedBy,
-            };
-
-            await _publishEndpoint.Publish(mappedDto);
+            try
+            {
+                _logger.LogInformation($"Publishing user delete message for {dto.IdentityNumber}");
+                await _publishEndpoint.Publish(dto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Failed when publishing user delete message for {dto.IdentityNumber}, {ex.Message}");
+            }
         }
     }
 }

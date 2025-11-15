@@ -2,6 +2,7 @@
 using AutoMapper;
 using Domain.Aggregate;
 using Domain.Entity;
+using Domain.ValueObject;
 
 namespace Application.Mapper
 {
@@ -21,6 +22,10 @@ namespace Application.Mapper
             // PatientSensor -> PatientSensorDTO
             CreateMap<PatientSensor, PatientSensorDTO>()
                 .ForMember(dest => dest.SensorDatas, opt => opt.MapFrom(src => src.SensorDatas));
+
+            // SensorData -> SensorDataDTO
+            CreateMap<SensorData, SensorDataDTO>()
+                .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Value.ToString()));
 
             // PatientStaff -> PatientStaffDTO
             CreateMap<PatientStaff, PatientStaffDTO>();

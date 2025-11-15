@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.ValueObject
 {
@@ -11,6 +12,8 @@ namespace Domain.ValueObject
         public BsonValue Value { get; private set; }
         public DateTime RecordedAt { get; private set; }
         #endregion
+
+        protected SensorData() { }
 
         public SensorData(
             BsonValue value)

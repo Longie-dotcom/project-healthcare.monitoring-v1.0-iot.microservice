@@ -134,6 +134,7 @@ namespace Infrastructure
 
                     services.AddScoped<IUpdateDevicePublisher, UpdateDevicePublisher>();
                     services.AddScoped<ISensorAssignmentPublisher, SensorAssignmentPublisher>();
+                    services.AddScoped<ICreateRoomPublisher, CreateRoomPublisher>();
                 });
 
                 InfrastructureLoggerBase(

@@ -20,7 +20,7 @@ namespace Domain.Aggregate
         public List<DeviceProfile> DeviceProfiles { get; private set; } = new();
         #endregion
 
-        protected RoomProfile() { }
+        public RoomProfile() { }
 
         public RoomProfile(
             Guid roomProfileID,

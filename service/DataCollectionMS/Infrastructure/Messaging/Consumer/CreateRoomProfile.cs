@@ -5,38 +5,38 @@ using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Messaging.Consumer
 {
-    public class CreateDeviceProfileConsumer : IConsumer<DeviceProfileCreate>
+    public class CreateRoomProfile : IConsumer<DeviceCreate>
     {
         #region Attributes
         private readonly IRoomProfileService deviceProfileService;
-        private readonly ILogger<CreateDeviceProfileConsumer> logger;
+        private readonly ILogger<CreateRoomProfile> logger;
         #endregion
 
         #region Properties
         #endregion
 
-        public CreateDeviceProfileConsumer(
+        public CreateRoomProfile(
             IRoomProfileService deviceProfileService,
-            ILogger<CreateDeviceProfileConsumer> logger)
+            ILogger<CreateRoomProfile> logger)
         {
             this.deviceProfileService = deviceProfileService;
             this.logger = logger;
         }
 
         #region Methods
-        public async Task Consume(ConsumeContext<DeviceProfileCreate> context)
+        public async Task Consume(ConsumeContext<DeviceCreate> context)
         {
             var message = context.Message;
             logger.LogInformation(
-                "Received DeviceProfileCreate for ControllerKey: {ControllerKey}", message.ControllerKey);
+                "Received DeviceCreate for EdgeKey: {EdgeKey}", message.EdgeKey);
             try
             {
-                await deviceProfileService.CreateDeviceProfile(message);
+                deviceProfileService.CreateRoomProfile(message);
             }
             catch (Exception ex)
             {
                 logger.LogError(
-                    ex, "Failed to assign new patient controller for ControllerKey: {ControllerKey}", message.ControllerKey);
+                    ex, "Failed to create new room for EdgeKey: {EdgeKey}", message.EdgeKey);
             }
         }
         #endregion

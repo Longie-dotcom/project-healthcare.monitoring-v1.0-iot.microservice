@@ -7,6 +7,7 @@ using AutoMapper;
 using Domain.Aggregate;
 using Domain.DomainException;
 using Domain.IRepository;
+using HCM.MessageBrokerDTOs;
 using System.Data;
 
 namespace Application.Service
@@ -254,7 +255,7 @@ namespace Application.Service
                 .Update(userId, user);
             await unitOfWork.CommitAsync(dto.PerformBy);
 
-            await deleteUserPublisher.PublishAsync(new SyncDeleteUserDTO()
+            await deleteUserPublisher.PublishAsync(new DeleteUser()
             {
                 IdentityNumber = user.IdentityNumber,
                 PerformedBy = dto.PerformBy
@@ -329,14 +330,14 @@ namespace Application.Service
                 .Update(user.UserID, user);
             await unitOfWork.CommitAsync(dto.PerformedBy);
 
-            await updateUserPublisher.PublishAsync(new SyncUpdateUserDTO()
+            await updateUserPublisher.PublishAsync(new UpdateUser()
             {
                 IdentityNumber = user.IdentityNumber,
                 PerformedBy = dto.PerformedBy,
                 Email = dto.Email,
                 Address = dto.Address,
-                DateOfBirth = dto.DateOfBirth,
-                FullName = dto.FullName,
+                Dob = dto.DateOfBirth,
+                Name = dto.FullName,
                 Gender = dto.Gender,
                 Phone = dto.PhoneNumber,
             });
@@ -344,7 +345,7 @@ namespace Application.Service
             return mapper.Map<UserDTO>(user);
         }
 
-        public async Task SyncUserUpdate(SyncUpdateUserDTO dto)
+        public async Task SyncUserUpdate(UpdateUser dto)
         {
             await unitOfWork.BeginTransactionAsync();
 
@@ -354,8 +355,8 @@ namespace Application.Service
                 ?? throw new UserNotFound();
 
             // IAM does not accept updated field phone and email from other services
-            if (!string.IsNullOrWhiteSpace(dto.FullName))
-                user.UpdateFullName(dto.FullName);
+            if (!string.IsNullOrWhiteSpace(dto.Name))
+                user.UpdateFullName(dto.Name);
 
             if (!string.IsNullOrWhiteSpace(dto.Address))
                 user.UpdateAddress(dto.Address);
@@ -363,8 +364,8 @@ namespace Application.Service
             if (!string.IsNullOrWhiteSpace(dto.Gender))
                 user.UpdateGender(dto.Gender);
 
-            if (dto.DateOfBirth != null)
-                user.UpdateDob(dto.DateOfBirth ?? DateTime.MinValue);
+            if (dto.Dob != null)
+                user.UpdateDob(dto.Dob ?? DateTime.MinValue);
 
             unitOfWork
                 .GetRepository<IUserRepository>()
