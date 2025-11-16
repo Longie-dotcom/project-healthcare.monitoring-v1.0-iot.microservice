@@ -82,6 +82,13 @@ namespace Domain.Entity
         }
 
         #region Methods
+        public IEnumerable<PatientStaff> GetActiveStaffs()
+        {
+            var staffs = PatientStaffs.FindAll(
+                s => s.UnassignedAt == null);
+            return staffs;
+        }
+
         public void UpdateIamInfo(
             string fullName, 
             DateTime? dob, 
@@ -170,6 +177,70 @@ namespace Domain.Entity
 
             foreach (var st in PatientStaffs.Where(st => st.UnassignedAt == null))
                 st.Unassign();
+        }
+
+
+
+        /// <summary>
+        /// Add a single sensor reading by matching the second segment of SensorKey with sensorName.
+        /// </summary>
+        public (PatientSensor Sensor, string DataType, object DataValue)? AddSensorDataByName(
+            string sensorName, string dataType, object dataValue)
+        {
+            var sensor = Sensors.FirstOrDefault(s =>
+                s.CanReceiveData &&
+                s.SensorKey.Contains(':') &&
+                s.SensorKey.Split(':').Length > 1 &&
+                string.Equals(s.SensorKey.Split(':')[1].Split('-')[0], sensorName, StringComparison.OrdinalIgnoreCase)
+            );
+
+            if (sensor == null)
+                return null;
+
+            // Handle JsonElement coming from System.Text.Json deserialization
+            object rawValue = dataValue;
+            if (dataValue is System.Text.Json.JsonElement je)
+            {
+                rawValue = je.ValueKind switch
+                {
+                    System.Text.Json.JsonValueKind.Number when dataType.ToLower() == "int" => je.GetInt32(),
+                    System.Text.Json.JsonValueKind.Number when dataType.ToLower() == "double" => je.GetDouble(),
+                    System.Text.Json.JsonValueKind.String => je.GetString() ?? "",
+                    System.Text.Json.JsonValueKind.True => true,
+                    System.Text.Json.JsonValueKind.False => false,
+                    _ => je.GetRawText()
+                };
+            }
+
+            // Convert to BsonValue (MongoDB compatible)
+            BsonValue bsonValue = dataType.ToLower() switch
+            {
+                "int" => new BsonInt32(Convert.ToInt32(rawValue)),
+                "double" => new BsonDouble(Convert.ToDouble(rawValue)),
+                "string" => new BsonString(Convert.ToString(rawValue)),
+                _ => new BsonString(Convert.ToString(rawValue))
+            };
+
+            sensor.AddData(bsonValue);
+            return (sensor, dataType, dataValue);
+        }
+
+        /// <summary>
+        /// Add multiple sensor readings at once
+        /// </summary>
+        public IEnumerable<(PatientSensor Sensor, string DataType, object DataValue)> AddMultipleSensorDataByName(
+            IEnumerable<(string sensorName, string dataType, object dataValue)> sensorValues)
+        {
+            var listSensor = new List<(PatientSensor Sensor, string DataType, object DataValue)>();
+
+            foreach (var sv in sensorValues)
+            {
+                var sensor = AddSensorDataByName(sv.sensorName, sv.dataType, sv.dataValue);
+                if (sensor != null)
+                    listSensor.Add(sensor.Value);
+            }
+
+            return listSensor;
         }
         #endregion
     }

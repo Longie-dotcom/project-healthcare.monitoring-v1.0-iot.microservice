@@ -144,7 +144,8 @@ namespace Application.Service
             // Validate patient existence
             var patient = await repo.GetDetailedByIdAsync(patientId);
             if (patient == null)
-                throw new PatientNotFound($"Patient with ID:{patientId} not found or has been deactivated.");
+                throw new PatientNotFound(
+                    $"Patient with ID:{patientId} not found or has been deactivated.");
 
             var patientDto = mapper.Map<PatientDTO>(patient);
 
@@ -235,7 +236,8 @@ namespace Application.Service
             var repo = unitOfWork.GetRepository<IPatientRepository>();
             var patient = await repo.GetDetailedByIdAsync(patientId);
             if (patient == null)
-                throw new PatientNotFound($"Patient with ID:{patientId} not found or has been deactivated.");
+                throw new PatientNotFound(
+                    $"Patient with ID:{patientId} not found or has been deactivated.");
             patient.UpdateActive(false);
             await unitOfWork.CommitAsync(dto.PerformedBy);
         }
@@ -259,13 +261,21 @@ namespace Application.Service
             // Validate patient existence
             var patient = await repo.GetDetailedByIdAsync(patientId);
             if (patient == null)
-                throw new PatientNotFound($"Patient with ID:{patientId} not found or has been deactivated.");
+                throw new PatientNotFound(
+                    $"Patient with ID:{patientId} not found or has been deactivated.");
+
+            // Validate controller availability
+            var inUse = await repo.IsControllerInUseAsync(dto.ControllerKey);
+            if (inUse)
+                throw new ControllerInUse(
+                    $"Bed has controller with key: {dto.ControllerKey} is currently not available");
 
             // Validate and populate device information
             var controllerProfile = await deviceManagementGrpcClient
                 .GetControllerMetaAsync(dto.ControllerKey);
             if (controllerProfile == null)
-                throw new DeviceNotFound($"Controller with key {dto.ControllerKey} not found.");
+                throw new DeviceNotFound(
+                    $"Controller with key {dto.ControllerKey} not found.");
 
             await unitOfWork.BeginTransactionAsync();
 
@@ -308,7 +318,7 @@ namespace Application.Service
             await unitOfWork.BeginTransactionAsync();
 
             // Apply domain
-            var releasedBed = patient.ReleaseBed(dto.PatientBedAssignmentID, DateTime.UtcNow);
+            var releasedBed = patient.ReleaseBed(dto.PatientBedAssignmentID);
             patient.UpdateStatus(PatientStatusEnum.Discharged);
 
             // Apply persistence

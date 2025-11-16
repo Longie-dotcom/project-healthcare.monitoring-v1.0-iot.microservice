@@ -1,9 +1,12 @@
 ﻿using Application.Interface.IGrpc;
+using Application.Interface.IMessageBrokerPublisher;
 using Application.Interface.IService;
+using DataCollectionDTO;
 using Domain.IRepository;
 using Infrastructure.Grpc;
 using Infrastructure.InfrastructureException;
 using Infrastructure.Messaging.Consumer;
+using Infrastructure.Messaging.Publisher;
 using Infrastructure.Persistence.Configuration;
 using Infrastructure.Persistence.Repository;
 using Infrastructure.Service;
@@ -98,7 +101,8 @@ namespace Infrastructure
                     x.AddConsumer<RemoveDeviceProfileConsumer>();
                     x.AddConsumer<PatientStaffAssignmentConsumer>();
                     x.AddConsumer<CreateRoomProfile>();
-                    x.AddConsumer<SensorDataConsumer>();
+                    x.AddConsumer<PatientSensorAssignmentConsumer>();
+                    //x.AddConsumer<SensorDataConsumer>();
 
                     x.UsingRabbitMq((context, cfg) =>
                     {
@@ -151,12 +155,22 @@ namespace Infrastructure
                             e.ConfigureConsumer<CreateRoomProfile>(context);
                         });
 
-                        cfg.ReceiveEndpoint("sensor_data", e =>
+                        cfg.ReceiveEndpoint("data_collection_patient_sensor_assignment_consumer_queue", e =>
                         {
-                            e.ConfigureConsumer<SensorDataConsumer>(context);
+                            e.ConfigureConsumer<PatientSensorAssignmentConsumer>(context);
                         });
+
+                        //cfg.ReceiveEndpoint("sensor_data", e =>
+                        //{
+                        //    e.ClearSerialization();
+                        //    e.UseRawJsonSerializer();
+
+                        //    e.ConfigureConsumer<SensorDataConsumer>(context);
+                        //});
                     });
                 });
+
+                services.AddScoped<ISignalREnvelopePublisher, SignalREnvelopePublisher>();
 
                 InfrastructureLoggerBase(
                     logger, "RabbitMQ successfully configured.");

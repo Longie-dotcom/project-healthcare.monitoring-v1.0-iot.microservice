@@ -46,6 +46,16 @@ namespace Domain.Aggregate
             return device;
         }
 
+        public DeviceProfile GetAssignedDeviceProfileByIP(string controllerIP)
+        {
+            var device = DeviceProfiles.FirstOrDefault(
+                d => d.IpAddress == controllerIP && d.UnassignedAt == null);
+            if (device == null)
+                throw new InvalidRoomProfileAggregateException(
+                    $"Active device with controller ip '{controllerIP}' not found in room '{EdgeKey}'.");
+            return device;
+        }
+
         public DeviceProfile GetAssignedDeviceProfileByPatientIdentity(string identityNumber)
         {
             var device = DeviceProfiles.FirstOrDefault(
@@ -77,7 +87,7 @@ namespace Domain.Aggregate
             return staff;
         }
 
-        public void UpdateIamInfo(
+        public void UpdateInfo(
             string? ipAddress,
             string? roomName,
             bool? isActive)

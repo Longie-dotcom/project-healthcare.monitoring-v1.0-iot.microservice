@@ -114,7 +114,7 @@ export function useEdgeDevices({ setLoading, setError, setInfo, setReload }) {
     try {
       const { token, performedBy } = getTokenAndUser();
       const response = await api.put(`${gatewayUrl}/hcm/device-management/edge-device/controller`,
-        { edgeKey, controllerKey, bedNumber, ipAddress, firmwareVersion, IsActive: isActive, PerformedBy: performedBy },
+        { edgeKey, controllerKey, bedNumber, ipAddress, firmwareVersion, isActive, performedBy },
         { headers: { Authorization: `Bearer ${token}` } });
       setInfo("Controller updated successfully");
       setReload(prev => prev + 1);
@@ -163,7 +163,7 @@ export function useEdgeDevices({ setLoading, setError, setInfo, setReload }) {
     try {
       const { token, performedBy } = getTokenAndUser();
       const response = await api.put(`${gatewayUrl}/hcm/device-management/edge-device/sensor`,
-        { edgeKey, controllerKey, sensorKey, type, unit, description, IsActive: isActive, PerformedBy: performedBy },
+        { edgeKey, controllerKey, sensorKey, type, unit, description, isActive, performedBy },
         { headers: { Authorization: `Bearer ${token}` } });
       setInfo("Sensor updated successfully");
       setReload(prev => prev + 1);

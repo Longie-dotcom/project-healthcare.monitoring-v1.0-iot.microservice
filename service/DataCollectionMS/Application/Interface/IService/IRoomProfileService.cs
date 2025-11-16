@@ -8,6 +8,7 @@ namespace Application.Interface.IService
         Task<IEnumerable<RoomProfileDTO>> GetRoomProfilesAsync();
 
         void CreateRoomProfile(DeviceCreate dto);
+        Task ReceiveDataAsync(RawSensorData dto);
 
         Task SyncIamInfoAsync(UpdateUser dto);
         Task CreateDeviceProfile(DeviceProfileCreate dto);
@@ -15,6 +16,9 @@ namespace Application.Interface.IService
 
         Task AssignPatientStaff(PatientStaffCreate dto);
         Task UnassignPatientStaff(PatientStaffRemove dto);
+
+        Task AssignPatientSensor(PatientSensorCreate dto);
+        Task UnassignPatientSensor(PatientSensorRemove dto);
 
         Task SyncEdgeDeviceAsync(UpdateEdgeDeviceDTO dto);
         Task SyncControllerAsync(UpdateControllerDTO dto);

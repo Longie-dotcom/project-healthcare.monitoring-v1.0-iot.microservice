@@ -70,6 +70,7 @@ function CreateStaffForm({ visible, onClose, addStaff }) {
                 onChange={handleChange}
               />
             </div>
+            
             <div className="modal-actions">
               <button type="submit" className="btn create">Create</button>
               <button type="button" className="btn cancel" onClick={onClose}>Cancel</button>

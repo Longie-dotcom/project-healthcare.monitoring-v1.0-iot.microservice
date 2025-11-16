@@ -29,5 +29,10 @@
     {
         public IPAddressConflicting(string message) : base(message) { }
     }
+
+    public class NullSensorNameType : ApplicationExceptionBase
+    {
+        public NullSensorNameType(string message) : base(message) { }
+    }
 }
 

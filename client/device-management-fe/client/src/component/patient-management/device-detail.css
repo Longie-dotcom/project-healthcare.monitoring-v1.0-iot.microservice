@@ -6,7 +6,6 @@
   border-radius: 12px;
   padding: 16px;
   width: 100%;
-  max-width: 700px;
   margin-left: 4%;
   max-height: 70vh;
   overflow-y: auto;
@@ -282,13 +281,12 @@
 /* -------------------------------------------------
    SENSOR CARDS
 --------------------------------------------------*/
+/* Sensor key with full row */
 #device-detail-child .sensor-info > .sensor-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 5px;
   padding: 10px 16px;
-  margin-top: 8px;
 
   border-radius: 10px;
   background: #f9f9f9;
@@ -299,34 +297,70 @@
 }
 
 #device-detail-child .sensor-info > .sensor-card:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.215);
+}
+
+#device-detail-child .sensor-info > .sensor-card > .sensor-key {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  background: #f0f0f0;
+  padding: 6px;
+  border-radius: 6px;
+  margin-bottom: 1%;
+}
+
+/* Details with 2 columns */ 
+#device-detail-child .sensor-info > .sensor-card > .details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+
+#device-detail-child .sensor-info > .sensor-card > .details > div {
+  display: flex;
+  justify-content: space-between;
+  background: #f0f0f0;
+  padding: 6px;
+  border-radius: 6px;
+}
+
+#device-detail-child .sensor-info > .sensor-card > .details > div > input {
+  border: none;
+  background-color: transparent;
+}
+
+
+#device-detail-child .sensor-info > .sensor-card:hover {
   box-shadow: 0 6px 20px rgba(0,0,0,0.12);
 }
 
 /* Sensor buttons */
-#device-detail-child .sensor-info > .sensor-card > .btn {
-  padding: 6px 12px;
+#device-detail-child .sensor-info > .sensor-card button {
+  width: 100%;
+  padding: 5px;
   border: none;
-  border-radius: 6px;
+  border-radius: 5px;
   color: #fff;
   cursor: pointer;
   transition: 0.2s;
-  font-size: 0.85rem;
 }
 
-#device-detail-child .sensor-info > .sensor-card > .unassign {
-  background: #e74c3c;
+#device-detail-child .sensor-info > .sensor-card .release-btn {
+  background-color: #df0606;
 }
 
-#device-detail-child .sensor-info > .sensor-card > .unassign:hover {
-  background: #c0392b;
+#device-detail-child .sensor-info > .sensor-card .release-btn:hover {
+  background-color: #b10000;
 }
 
-#device-detail-child .sensor-info > .sensor-card > .re-assign {
-  background: #4e67d5;
+#device-detail-child .sensor-info > .sensor-card .update-btn {
+  background-color: #239afb;
 }
 
-#device-detail-child .sensor-info > .sensor-card > .re-assign:hover {
-  background: #3c55c1;
+#device-detail-child .sensor-info > .sensor-card .update-btn:hover {
+  background-color: rgb(86, 22, 214);
 }
 
 /* -------------------------------------------------

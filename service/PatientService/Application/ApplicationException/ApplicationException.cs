@@ -39,4 +39,9 @@
     {
         public PatientStatusCodeExisted(string message) : base(message) { }
     }
+
+    public class ControllerInUse : ApplicationExceptionBase
+    {
+        public ControllerInUse(string message) : base(message) { }
+    }
 }

@@ -7,5 +7,6 @@ namespace Domain.IRepository
         IRepositoryBase
     {
         Task<RoomProfile?> GetRoomProfileByKeyAsync(string edgeKey);
+        Task<RoomProfile?> GetRoomProfileByIPAsync(string edgeIP);
     }
 }

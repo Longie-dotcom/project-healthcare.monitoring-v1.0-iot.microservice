@@ -38,7 +38,7 @@ namespace API.Middleware
             switch (exception)
             {
                 // Domain Layer Exceptions - 400 Bad Request
-                case InvalidEdgeDeviceAggregateException:
+                case InvalidEdgeDeviceAggregateException or NullSensorNameType:
                     _logger.LogWarning(exception, "Bad request: {ExceptionType}", exception.GetType().Name);
                     context.Response.StatusCode = StatusCodes.Status400BadRequest;
                     response.Type = "Bad Request";

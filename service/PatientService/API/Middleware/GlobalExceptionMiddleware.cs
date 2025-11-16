@@ -64,7 +64,7 @@ namespace API.Middleware
 
                 // Conflict Exceptions - 409 Conflict
                 case PatientCodeExisted or IdentityNumberExisted
-                or PatientStatusCodeExisted:
+                or PatientStatusCodeExisted or ControllerInUse:
                     _logger.LogWarning(exception, "Conflict error: {ExceptionType}", exception.GetType().Name);
                     context.Response.StatusCode = StatusCodes.Status409Conflict;
                     response.Type = "Application Error";

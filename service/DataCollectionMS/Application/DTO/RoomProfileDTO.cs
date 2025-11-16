@@ -58,4 +58,28 @@ namespace Application.DTO
         public string Value { get; set; } = string.Empty;
         public DateTime RecordedAt { get; set; }
     }
+
+    public class RawSensorData
+    {
+        public string ControllerIP { get; set; } = string.Empty;
+        public string EdgeIP { get; set; } = string.Empty;
+        public List<SensorValue> SensorDatas { get; set; } = new();
+    }
+
+    public class SensorValue
+    {
+        public string SensorName { get; set; } = string.Empty;
+        public string DataType { get; set; } = string.Empty;
+        public object DataValue { get; set; }
+    }
+
+    public class SensorUpdatePayloadDto
+    {
+        public string PatientIdentityNumber { get; set; } = string.Empty;
+        public Guid ControllerId { get; set; }
+        public string BedNumber { get; set; } = string.Empty;
+        public string SensorKey { get; set; } = string.Empty;
+        public string DataType { get; set; } = string.Empty;
+        public object DataValue { get; set; } = default!;
+    }
 }

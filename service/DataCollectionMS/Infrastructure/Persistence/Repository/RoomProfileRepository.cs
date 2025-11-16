@@ -26,6 +26,11 @@ namespace Infrastructure.Persistence.Repository
         {
             return await collection.Find(r => r.EdgeKey == edgeKey).FirstOrDefaultAsync();
         }
+
+        public async Task<RoomProfile?> GetRoomProfileByIPAsync(string edgeIP)
+        {
+            return await collection.Find(r => r.IpAddress == edgeIP).FirstOrDefaultAsync();
+        }
         #endregion
     }
 }

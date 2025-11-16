@@ -248,6 +248,10 @@ namespace Application.Service
         {
             var repo = unitOfWork.GetRepository<IEdgeDeviceRepository>();
 
+            // validate name type assignment
+            if (string.IsNullOrEmpty(dto.Type))
+                throw new NullSensorNameType("Sensor name type can not be empty");
+
             // fetch edge + controllers as tracking
             var edgeOwner = await repo.GetEdgeDeviceByEdgeKeyAsTracking(dto.EdgeKey);
             if (edgeOwner == null)
@@ -259,7 +263,7 @@ namespace Application.Service
 
             // bed/sensor collision is validated in aggregate AddSensor (controller-level)
             var nextIndex = controller.Sensors.Count + 1;
-            var sensorKey = KeyGenerator.GenerateKey("SENS", nextIndex);
+            var sensorKey = KeyGenerator.GenerateKey($"SENS:{dto.Type}", nextIndex);
 
             var sensor = new Sensor(
                 Guid.NewGuid(),
@@ -309,14 +313,7 @@ namespace Application.Service
 
             if (dto.IsActive.HasValue)
             {
-                if (dto.IsActive.Value == true)
-                {
-                    controller.Activate();
-                }
-                else
-                {
-                    controller.Deactivate();
-                }
+                sensor.UpdateActive(dto.IsActive.Value);
             }
 
             await unitOfWork.CommitAsync(dto.PerformedBy);
@@ -376,10 +373,10 @@ namespace Application.Service
                         FirmwareVersion = controller.FirmwareVersion,
                         IsActive = controller.IsActive,
                         Status = controller.Status,
+                        IpAddress = controller.IpAddress, // Controller IP
 
                         EdgeKey = fullEdge.EdgeKey,
                         RoomName = fullEdge.RoomName,
-                        IpAddress = fullEdge.IpAddress,
                         Description = fullEdge.Description,
 
                         Sensors = controller.Sensors.Select(s => new DeviceProfileSensorDTO

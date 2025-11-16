@@ -152,7 +152,7 @@ namespace Domain.Aggregate
             return null;
         }
 
-        public PatientBedAssignment ReleaseBed(Guid bedAssignmentID, DateTime releasedAt)
+        public PatientBedAssignment ReleaseBed(Guid bedAssignmentID)
         {
             var bed = patientBedAssignments
                 .FirstOrDefault(b => b.PatientBedAssignmentID == bedAssignmentID);

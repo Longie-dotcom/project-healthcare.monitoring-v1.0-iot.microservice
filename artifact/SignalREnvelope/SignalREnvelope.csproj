@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFramework>net9.0</TargetFramework>
+	  <ImplicitUsings>enable</ImplicitUsings>
+	  <Nullable>enable</Nullable>
+
+	  <Authors>Long</Authors>
+	  <PackageId>SignalREnvelope</PackageId>
+	  <Version>1.0.3</Version>
+	  <Description>Signal IR envelop DTO</Description>
+
+	  <IsPackable>true</IsPackable>
+	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	  <IncludeBuildOutput>true</IncludeBuildOutput>
+	  <PackageOutputPath>$(OutputPath)</PackageOutputPath>
+  </PropertyGroup>
+
+</Project>

@@ -42,7 +42,7 @@ function Dashboard() {
       )}
 
       <div className="dashboard-sidebar">
-        <h2 className="sidebar-logo">Staff Service</h2>
+        <h2 className="sidebar-logo">Patient Service</h2>
         <ul className="sidebar-tabs">
           {tabs.map(tab => (
             <li

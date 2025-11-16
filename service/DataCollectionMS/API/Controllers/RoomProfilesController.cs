@@ -31,6 +31,14 @@ namespace API.Controllers
             var profiles = await roomProfileService.GetRoomProfilesAsync();
             return Ok(profiles);
         }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> ReceiveSensorData([FromBody] RawSensorData data)
+        {
+            await roomProfileService.ReceiveDataAsync(data);
+            return Ok(new { status = "received" });
+        }
         #endregion
     }
 }
