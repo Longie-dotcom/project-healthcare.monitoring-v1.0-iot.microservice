@@ -10,14 +10,17 @@ namespace Domain.ValueObject
 
         #region Properties
         public BsonValue Value { get; private set; }
+        public string Type { get; private set; }
         public DateTime RecordedAt { get; private set; }
         #endregion
 
         protected SensorData() { }
 
         public SensorData(
+            string type,
             BsonValue value)
         {
+            Type = type;
             Value = value;
             RecordedAt = DateTime.UtcNow;
         }

@@ -29,7 +29,7 @@ namespace Infrastructure.Persistence.Repository
 
         public async Task<RoomProfile?> GetRoomProfileByIPAsync(string edgeIP)
         {
-            return await collection.Find(r => r.IpAddress == edgeIP).FirstOrDefaultAsync();
+            return await collection.Find(r => r.IpAddress == edgeIP && r.IsActive).FirstOrDefaultAsync();
         }
         #endregion
     }

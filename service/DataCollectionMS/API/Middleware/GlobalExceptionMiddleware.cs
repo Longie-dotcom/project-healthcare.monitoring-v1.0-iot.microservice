@@ -61,7 +61,8 @@ namespace API.Middleware
 
                 // Not Found Exceptions - 404 Not Found
                 case DeviceProfileNotFound or RoomProfileNotFound 
-                or PatientSensorNotFound or StaffAssignmentNotFound:
+                or PatientSensorNotFound or StaffAssignmentNotFound
+                or PatientAssignmentNotFound:
                     _logger.LogWarning(exception, "Resource not found: {ExceptionType}", exception.GetType().Name);
                     context.Response.StatusCode = StatusCodes.Status404NotFound;
                     response.ErrorCode = "404 - Not Found";
@@ -77,7 +78,7 @@ namespace API.Middleware
                     break;
 
                 // Authentication/Authorization Exceptions - 401 Unauthorized
-                case AuthorizationFailedException:
+                case AuthorizationFailedException or UnauthorizedAssignment:
                     _logger.LogWarning(exception, "Authentication/Authorization error");
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     response.ErrorCode = "401 - Unauthorized";

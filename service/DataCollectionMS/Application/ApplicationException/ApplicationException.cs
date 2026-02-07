@@ -34,4 +34,16 @@
         public StaffAssignmentNotFound(string message)
             : base(message) { }
     }
+
+    public class PatientAssignmentNotFound : ApplicationExceptionBase
+    {
+        public PatientAssignmentNotFound(string message)
+            : base(message) { }
+    }
+
+    public class UnauthorizedAssignment : ApplicationExceptionBase
+    {
+        public UnauthorizedAssignment(string message)
+            : base(message) { }
+    }
 }

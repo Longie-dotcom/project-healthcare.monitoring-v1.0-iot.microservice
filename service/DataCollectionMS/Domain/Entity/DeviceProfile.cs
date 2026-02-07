@@ -221,7 +221,7 @@ namespace Domain.Entity
                 _ => new BsonString(Convert.ToString(rawValue))
             };
 
-            sensor.AddData(bsonValue);
+            sensor.AddData(dataType, bsonValue);
             return (sensor, dataType, dataValue);
         }
 

@@ -1,0 +1,80 @@
+#patient-management {
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  font-weight: bold;
+}
+
+.filter input {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.filter button {
+  padding: 6px 12px;
+  margin-left: 6px;
+  cursor: pointer;
+}
+
+.patient-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.patient-list-header, .patient-card {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background-color: #f0f4f8;
+  font-weight: bold;
+}
+
+.patient-card {
+  background-color: #fff;
+  font-weight: normal;
+}
+
+.patient-card.gray-out {
+  opacity: 0.6;
+}
+
+.patient-actions button {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #3498db;
+  color: #fff;
+}
+
+.patient-actions button:hover {
+  background-color: #073a5c;
+}
+
+.paging {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.page-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.empty-list {
+  text-align: center;
+  margin-top: 20vh;
+  font-size: 1.2rem;
+  color: #888;
+}

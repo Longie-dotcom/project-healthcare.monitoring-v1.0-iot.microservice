@@ -55,6 +55,7 @@ namespace Application.DTO
 
     public class SensorDataDTO
     {
+        public string Type { get; set; } = string.Empty;
         public string Value { get; set; } = string.Empty;
         public DateTime RecordedAt { get; set; }
     }
@@ -78,8 +79,27 @@ namespace Application.DTO
         public string PatientIdentityNumber { get; set; } = string.Empty;
         public Guid ControllerId { get; set; }
         public string BedNumber { get; set; } = string.Empty;
+        public string RoomName { get; set; } = string.Empty;
         public string SensorKey { get; set; } = string.Empty;
         public string DataType { get; set; } = string.Empty;
         public object DataValue { get; set; } = default!;
+    }
+
+    public class StaffAssignedControllerDTO
+    {
+        public string ControllerKey { get; set; } = string.Empty;
+        public string BedNumber { get; set; } = string.Empty;
+
+        public string EdgeKey { get; set; } = string.Empty;
+        public string RoomName { get; set; } = string.Empty;
+
+        public string PatientIdentityNumber { get; set; } = string.Empty;
+        public string PatientName { get; set; } = string.Empty;
+    }
+
+    public class GetPatientDataDTO
+    {
+        public string PatientIdentityNumber { get; set; } = string.Empty;
+        public string StaffIdentityNumber { get; set; } = string.Empty;
     }
 }

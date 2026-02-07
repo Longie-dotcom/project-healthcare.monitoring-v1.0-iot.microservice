@@ -1,0 +1,174 @@
+.grid-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 8px;
+
+  /* Hide scrollbar */
+  scrollbar-width: none; /* Firefox */
+}
+.grid-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
+.sensor-card {
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 1rem;
+  color: #111827;
+}
+
+.charts-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.sensor-type-chart {
+  background: #fff;
+  border-radius: 6px;
+  padding: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.sensor-type-chart h3 {
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.chart-wrapper {
+  width: 100%;
+  height: 180px; /* smaller chart height */
+}
+
+.latest-value {
+  margin-top: 4px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: #1f2937;
+}
+
+/* ================= DETAIL CARD ================= */
+.detail-card {
+  position: relative;
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+  max-height: 80vh; /* like grid-container */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Close / Back Button */
+.close-detail-btn {
+  align-self: flex-start;
+  margin-bottom: 12px;
+  padding: 6px 12px;
+  border: none;
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #111827;
+  transition: background 0.2s;
+}
+
+.close-detail-btn:hover {
+  background-color: #d1d5db;
+}
+
+/* Scrollable detail content */
+.detail-content {
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 4px; /* spacing for scrollbar */
+}
+
+/* Hide scrollbar (optional) */
+.detail-content::-webkit-scrollbar {
+  display: none;
+}
+.detail-content {
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Detail headings & info */
+.detail-content h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+  color: #111827;
+}
+
+.detail-content p {
+  margin: 2px 0;
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.detail-content ul {
+  margin: 4px 0 8px 16px;
+  padding: 0;
+  list-style-type: disc;
+}
+
+/* ================= BUTTONS ================= */
+.view-detail-btn {
+  margin-top: 8px;
+  padding: 6px 12px;
+  border: none;
+  background-color: #3b82f6;
+  color: white;
+  font-size: 0.95rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.view-detail-btn:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.view-detail-btn:active {
+  transform: translateY(0);
+}
+
+/* Charts wrapper & cards (reuse your styles) */
+.charts-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.sensor-type-chart {
+  background: #fff;
+  border-radius: 6px;
+  padding: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.sensor-type-chart h3 {
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.latest-value {
+  margin-top: 4px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: #1f2937;
+}

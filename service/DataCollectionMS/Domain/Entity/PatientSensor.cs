@@ -64,12 +64,12 @@ namespace Domain.Entity
             IsActive = false;
         }
 
-        public void AddData(BsonValue value)
+        public void AddData(string type, BsonValue value)
         {
             if (!CanReceiveData)
                 return;
 
-            SensorDatas.Add(new SensorData(value));
+            SensorDatas.Add(new SensorData(type, value));
         }
 
         private bool IsUnassigned()

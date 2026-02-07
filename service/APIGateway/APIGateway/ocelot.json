@@ -125,8 +125,8 @@
     },
 
     {
-      "DownstreamPathTemplate": "/api/DeviceProfiles/{everything}",
-      "UpstreamPathTemplate": "/hcm/data-collection/device-profile/{everything}",
+      "DownstreamPathTemplate": "/api/RoomProfiles/{everything}",
+      "UpstreamPathTemplate": "/hcm/data-collection/room-profile/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer"

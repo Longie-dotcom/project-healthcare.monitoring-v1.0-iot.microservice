@@ -6,6 +6,8 @@ namespace Application.Interface.IService
     public interface IRoomProfileService
     {
         Task<IEnumerable<RoomProfileDTO>> GetRoomProfilesAsync();
+        Task<IEnumerable<StaffAssignedControllerDTO>> GetControllersHandledByStaffAsync(string staffIdentityNumber);
+        Task<DeviceProfileDTO> GetPatientData(GetPatientDataDTO dto);
 
         void CreateRoomProfile(DeviceCreate dto);
         Task ReceiveDataAsync(RawSensorData dto);

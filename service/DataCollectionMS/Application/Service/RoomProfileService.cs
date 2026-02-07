@@ -7,7 +7,6 @@ using Domain.Aggregate;
 using Domain.DomainException;
 using Domain.Entity;
 using Domain.IRepository;
-using Domain.ValueObject;
 using HCM.MessageBrokerDTOs;
 
 namespace Application.Service
@@ -39,6 +38,65 @@ namespace Application.Service
             var repo = unitOfWork.GetRepository<IRoomProfileRepository>();
             var rooms = await repo.GetAllAsync();
             return mapper.Map<IEnumerable<RoomProfileDTO>>(rooms);
+        }
+
+        public async Task<IEnumerable<StaffAssignedControllerDTO>>
+            GetControllersHandledByStaffAsync(string staffIdentityNumber)
+        {
+            var repo = unitOfWork.GetRepository<IRoomProfileRepository>();
+            var rooms = await repo.GetAllAsync();
+
+            var list =  rooms
+                .SelectMany(room => room.DeviceProfiles
+                    .Where(controller => controller.PatientStaffs
+                        .Any(ps => ps.StaffIdentityNumber == staffIdentityNumber))
+                    .Select(controller => new StaffAssignedControllerDTO
+                    {
+                        ControllerKey = controller.ControllerKey,
+                        BedNumber = controller.BedNumber,
+                        EdgeKey = room.EdgeKey,
+                        RoomName = room.RoomName,
+                        PatientIdentityNumber = controller.IdentityNumber,
+                        PatientName = controller.FullName,
+                    })
+                )
+                .ToList();
+
+            if (list == null || !list.Any())
+                throw new PatientAssignmentNotFound(
+                    $"Person with identity number: {staffIdentityNumber} has no patient assignment");
+
+            return list;
+        }
+
+        public async Task<DeviceProfileDTO> GetPatientData(GetPatientDataDTO dto)
+        {
+            var repo = unitOfWork.GetRepository<IRoomProfileRepository>();
+            var rooms = await repo.GetAllAsync();
+            if (rooms == null || !rooms.Any())
+                throw new RoomProfileNotFound($"There is no room");
+
+            DeviceProfile device = null;
+            foreach (var room in rooms)
+            {
+                if (room.IsActive)
+                {
+                    device = room.GetAssignedDeviceProfileByPatientIdentity(dto.PatientIdentityNumber);
+                    if (device != null)
+                        break;
+                }
+            }
+            if (device == null)
+                throw new PatientSensorNotFound(
+                    $"Bed of patient with identity number: {dto.PatientIdentityNumber} not found");
+
+            var staffAssigned = device.GetActiveStaffs().FirstOrDefault(
+                ac => ac.StaffIdentityNumber == dto.StaffIdentityNumber);
+            if (staffAssigned == null)
+                throw new UnauthorizedAssignment(
+                    $"Staff with identity number: {dto.StaffIdentityNumber} was not assigned to this patient");
+
+            return mapper.Map<DeviceProfileDTO>(device);
         }
 
         public void CreateRoomProfile(DeviceCreate dto)
@@ -76,6 +134,7 @@ namespace Application.Service
                     foreach (var sensor in listSensor)
                     {
                         await ForwardSensorUpdateAsync(
+                            room,
                             controller, 
                             sensor.Sensor, 
                             new SensorValue() 
@@ -102,30 +161,34 @@ namespace Application.Service
 
                 foreach (var r in allRooms)
                 {
-                    var controller = r.GetAssignedDeviceProfileByIP(dto.ControllerIP);
-                    if (controller != null && dto.SensorDatas != null && dto.SensorDatas.Any())
+                    if (r.IsActive)
                     {
-                        // Add data
-                        var listSensor = UpdateControllerSensors(controller, dto.SensorDatas);
-
-                        // Persist the changes
-                        repo.Update(r.ID, r);
-
-                        // Publish data to dashboard realtime
-                        foreach (var sensor in listSensor)
+                        var controller = r.GetAssignedDeviceProfileByIP(dto.ControllerIP);
+                        if (controller != null && dto.SensorDatas != null && dto.SensorDatas.Any())
                         {
-                            await ForwardSensorUpdateAsync(
-                                controller,
-                                sensor.Sensor,
-                                new SensorValue()
-                                {
-                                    DataType = sensor.DataType,
-                                    DataValue = sensor.DataValue
-                                });
-                        }
+                            // Add data
+                            var listSensor = UpdateControllerSensors(controller, dto.SensorDatas);
 
-                        // Stop once we find the controller
-                        return;
+                            // Persist the changes
+                            repo.Update(r.ID, r);
+
+                            // Publish data to dashboard realtime
+                            foreach (var sensor in listSensor)
+                            {
+                                await ForwardSensorUpdateAsync(
+                                    r,
+                                    controller,
+                                    sensor.Sensor,
+                                    new SensorValue()
+                                    {
+                                        DataType = sensor.DataType,
+                                        DataValue = sensor.DataValue
+                                    });
+                            }
+
+                            // Stop once we find the controller
+                            return;
+                        }
                     }
                 }
             }
@@ -360,6 +423,7 @@ namespace Application.Service
         }
 
         private async Task ForwardSensorUpdateAsync(
+            RoomProfile room,
             DeviceProfile controller,
             PatientSensor sensor,
             SensorValue value)
@@ -375,6 +439,7 @@ namespace Application.Service
                 PatientIdentityNumber = controller.IdentityNumber,
                 ControllerId = controller.DeviceProfileID,
                 BedNumber = controller.BedNumber,
+                RoomName = room.RoomName,
                 SensorKey = sensor.SensorKey,
                 DataType = value.DataType,
                 DataValue = value.DataValue,
